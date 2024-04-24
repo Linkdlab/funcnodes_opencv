@@ -2,7 +2,8 @@ import unittest
 import numpy as np
 import cv2
 from funcnodes_opencv import OpenCVImageFormat
-from funcnodes_images import NumpyImageFormat
+from funcnodes_images import NumpyImageFormat, PillowImageFormat
+from PIL import Image
 
 
 class TestOpenCVImageFormat(unittest.TestCase):
@@ -41,14 +42,13 @@ class TestOpenCVImageFormat(unittest.TestCase):
         self.assertEqual(thumbnail.data.shape[1], 25)  # Checking width of the thumbnail
         self.assertEqual(thumbnail.data.shape[0], 50)  # Checking width of the thumbnail
 
-
     def test_resize(self):
         """Test resizing functionality."""
         cv2_format = OpenCVImageFormat(self.sample_data)
         resized = cv2_format.resize(w=100)
         self.assertEqual(resized.data.shape[1], 100)  # Checking new width
 
-    def test_converters(self):
+    def test_to_numpy(self):
         """Test the conversion between cv2 and numpy formats."""
         cv2_format = OpenCVImageFormat(self.sample_data)
         np_format = cv2_format.to_np()
@@ -59,3 +59,30 @@ class TestOpenCVImageFormat(unittest.TestCase):
         self.assertIsInstance(cv2_format_again, OpenCVImageFormat)
 
         np.testing.assert_array_equal(cv2_format_again.data, self.sample_data)
+
+    def test_to_img(self):
+        """Test the conversion to PIL image."""
+        cv2_format = OpenCVImageFormat(self.sample_data)
+        pil_img = cv2_format.to_img()
+        self.assertIsInstance(pil_img, PillowImageFormat)
+        self.assertEqual(np.prod(pil_img.data.size) * 3, cv2_format.data.size)
+
+    def test_from_numpy(self):
+        """Test the conversion from numpy to cv2."""
+        np_format = NumpyImageFormat(self.sample_data)
+        cv2_format = np_format.to_cv2()
+        self.assertIsInstance(cv2_format, OpenCVImageFormat)
+        np.testing.assert_array_equal(
+            cv2_format.data,
+            self.sample_data[:, :, [2, 1, 0]],  # Converting to BGR
+        )
+
+    def test_from_img(self):
+        """Test the conversion from PIL image to cv2."""
+        pil_img = PillowImageFormat(Image.fromarray(self.sample_data))
+        cv2_format = pil_img.to_cv2()
+        self.assertIsInstance(cv2_format, OpenCVImageFormat)
+        np.testing.assert_array_equal(
+            cv2_format.data,
+            self.sample_data[:, :, [2, 1, 0]],  # Converting to BGR
+        )

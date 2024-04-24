@@ -89,4 +89,4 @@ def pil_to_cv2(pil_img: PillowImageFormat) -> OpenCVImageFormat:
 
 
 OpenCVImageFormat.add_to_converter(PillowImageFormat, cv2_to_pil)
-OpenCVImageFormat.add_to_converter(PillowImageFormat, pil_to_cv2)
+PillowImageFormat.add_to_converter(OpenCVImageFormat, pil_to_cv2)
