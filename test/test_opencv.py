@@ -8,7 +8,7 @@ from funcnodes_images import NumpyImageFormat
 class TestOpenCVImageFormat(unittest.TestCase):
     def setUp(self):
         # Create a sample OpenCV image
-        self.sample_data = np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
+        self.sample_data = np.random.randint(0, 255, (100, 50, 3), dtype=np.uint8)
         if self.sample_data is not None:
             self.sample_data = cv2.cvtColor(
                 self.sample_data, cv2.COLOR_RGB2BGR
@@ -38,7 +38,9 @@ class TestOpenCVImageFormat(unittest.TestCase):
         """Test thumbnail creation functionality."""
         cv2_format = OpenCVImageFormat(self.sample_data)
         thumbnail = cv2_format.to_thumbnail((50, 50))
-        self.assertEqual(thumbnail.data.shape[1], 50)  # Checking width of the thumbnail
+        self.assertEqual(thumbnail.data.shape[1], 25)  # Checking width of the thumbnail
+        self.assertEqual(thumbnail.data.shape[0], 50)  # Checking width of the thumbnail
+
 
     def test_resize(self):
         """Test resizing functionality."""

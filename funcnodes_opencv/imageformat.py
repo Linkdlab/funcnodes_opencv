@@ -41,7 +41,7 @@ class OpenCVImageFormat(NumpyImageFormat):
         )[1].tobytes()
 
     def to_thumbnail(self, size: tuple) -> "OpenCVImageFormat":
-        cur_x, cur_y = self.data.shape[:2]
+        cur_y, cur_x = self.data.shape[:2]
         ratio = min(size[0] / cur_x, size[1] / cur_y)
         new_x, new_y = int(cur_x * ratio), int(cur_y * ratio)
         return OpenCVImageFormat(
