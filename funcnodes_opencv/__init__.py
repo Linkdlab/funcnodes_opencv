@@ -6,7 +6,7 @@ import funcnodes_numpy as fnnp  # noqa: F401 # for type hinting
 __all__ = ["OpenCVImageFormat", "image_operations", "masks"]
 
 
-__version__ = "0.1.6"
+__version__ = "0.1.7"
 
 
 NODE_SHELF = fn.Shelf(

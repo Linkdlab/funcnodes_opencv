@@ -13,8 +13,10 @@ files = [
 
 [package.dependencies]
 colorama = {version = "*", markers = "os_name == \"nt\""}
+importlib-metadata = {version = ">=4.6", markers = "python_full_version < \"3.10.2\""}
 packaging = ">=19.1"
 pyproject_hooks = "*"
+tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
 
 [package.extras]
 docs = ["furo (>=2023.08.17)", "sphinx (>=7.0,<8.0)", "sphinx-argparse-cli (>=1.5)", "sphinx-autodoc-typehints (>=1.10)", "sphinx-issues (>=3.0.0)"]
@@ -474,20 +476,20 @@ websockets = ">=12.0,<13.0"
 
 [[package]]
 name = "funcnodes-images"
-version = "0.1.15"
+version = "0.1.16"
 description = ""
 optional = false
-python-versions = "<4.0,>=3.11"
+python-versions = "<4.0,>=3.10"
 files = [
-    {file = "funcnodes_images-0.1.15-py3-none-any.whl", hash = "sha256:4b90f015ebf7cbd62b043942de716248f76ad960e09b2469ebaa743735c453e8"},
-    {file = "funcnodes_images-0.1.15.tar.gz", hash = "sha256:2d5ee25f55def99ece9e2bfbb19957fe5286d1bfcb4a538fbbe6d7343185183d"},
+    {file = "funcnodes_images-0.1.16-py3-none-any.whl", hash = "sha256:641d3a85d5135c9af03e6b84cc0377b4fdb4cf5df46480f3338dc893d37b635e"},
+    {file = "funcnodes_images-0.1.16.tar.gz", hash = "sha256:b16754fd1efd0b04a69e62df2589f586bced1e88ac4162963070ac2d133811c5"},
 ]
 
 [package.dependencies]
-funcnodes = ">=0.1.42,<1.0.0"
-funcnodes-numpy = ">=0.1.52,<0.2.0"
-numpy = ">=1.26.4,<2.0.0"
-pillow = ">=10.3.0,<11.0.0"
+funcnodes = ">=0.1.42"
+funcnodes-numpy = ">=0.1,<0.2"
+numpy = ">=1.26,<2.0"
+pillow = ">=10.3,<11.0"
 
 [[package]]
 name = "funcnodes-numpy"
@@ -760,6 +762,8 @@ files = [
 numpy = [
     {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
     {version = ">=1.23.5", markers = "python_version >= \"3.11\" and python_version < \"3.12\""},
+    {version = ">=1.21.4", markers = "python_version >= \"3.10\" and platform_system == \"Darwin\" and python_version < \"3.11\""},
+    {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version >= \"3.10\" and python_version < \"3.11\""},
 ]
 
 [[package]]
@@ -933,6 +937,7 @@ pyproject-hooks = ">=1.0.0,<2.0.0"
 requests = ">=2.26,<3.0"
 requests-toolbelt = ">=1.0.0,<2.0.0"
 shellingham = ">=1.5,<2.0"
+tomli = {version = ">=2.0.1,<3.0.0", markers = "python_version < \"3.11\""}
 tomlkit = ">=0.11.4,<1.0.0"
 trove-classifiers = ">=2022.5.19"
 virtualenv = ">=20.23.0,<21.0.0"
@@ -1246,6 +1251,17 @@ files = [
 ]
 
 [[package]]
+name = "tomli"
+version = "2.0.1"
+description = "A lil' TOML parser"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
+    {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
+]
+
+[[package]]
 name = "tomlkit"
 version = "0.12.5"
 description = "Style preserving TOML library"
@@ -1486,5 +1502,5 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.11"
-content-hash = "6c3cc2e6dc584cb6229620b0ea2aab33d544281eae40a8315cd97e9a0f5f6fe7"
+python-versions = "^3.10"
+content-hash = "2ab3cdc37bddec1201ba6b6d4a5c67f797aa8637708ac98e6b8e2bd9f815d84b"
