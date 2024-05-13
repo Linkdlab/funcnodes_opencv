@@ -22,7 +22,7 @@ class TestOpenCVImageFormat(unittest.TestCase):
     def test_color_conversion(self):
         """Test color space conversions within the OpenCVImageFormat."""
         cv2_format = OpenCVImageFormat(self.sample_data)
-        rgb_data = cv2_format.to_to_colorspace("RGB")
+        rgb_data = cv2_format.to_colorspace("RGB")
         self.assertEqual(rgb_data.shape, self.sample_data.shape)
         # Check if the color conversion was correctly applied
         b, g, r = cv2.split(self.sample_data)

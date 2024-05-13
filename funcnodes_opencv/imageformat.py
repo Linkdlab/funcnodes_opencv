@@ -19,10 +19,9 @@ class OpenCVImageFormat(NumpyImageFormat):
     def __init__(self, arr: np.ndarray, colorspace: str = "BGR"):
         if not isinstance(arr, np.ndarray):
             raise TypeError("arr must be a numpy array")
-        if arr.ndim != 3 or (arr.shape[2] != 3 and arr.shape[2] != 1):
-            raise ValueError(
-                "arr must have 3 dimensions and 3 or 1 channels in BGR format"
-            )
+
+        if arr.ndim == 2:
+            colorspace = "GRAY"
 
         if colorspace != "BGR":
             arr = _conv_colorspace(arr, colorspace, "BGR")
@@ -32,7 +31,7 @@ class OpenCVImageFormat(NumpyImageFormat):
     def get_data_copy(self) -> np.ndarray:
         return self._data.copy()
 
-    def to_to_colorspace(self, colorspace: str) -> np.ndarray:
+    def to_colorspace(self, colorspace: str) -> np.ndarray:
         return _conv_colorspace(self.data, "BGR", colorspace)
 
     def to_jpeg(self, quality=0.75) -> bytes:

@@ -1,15 +1,16 @@
 [tool.poetry]
 name = "funcnodes-opencv"
-version = "0.1.4"
+version = "0.1.5"
 description = ""
 authors = ["Julian Kimmig <julian.kimmig@gmx.net>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-funcnodes_images = "^0.1.14"
+funcnodes_images = "^0.1.15"
 opencv-python-headless = "^4.9.0.80"
 funcnodes = "^0.2"
+funcnodes-numpy = "*"
 
 
 [build-system]
