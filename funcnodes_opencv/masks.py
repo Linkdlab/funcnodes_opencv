@@ -1,7 +1,7 @@
 from typing import Optional, Tuple, Literal, Union
 import cv2
 import numpy as np
-from .imageformat import OpenCVImageFormat, ImageFormat
+from .imageformat import OpenCVImageFormat, ImageFormat, NumpyImageFormat
 import funcnodes as fn
 import math
 
@@ -160,7 +160,7 @@ def distance_transform(
 ) -> OpenCVImageFormat:
     distance_type = DistanceTypes.v(distance_type)
     img = cv2.cvtColor(img.to_cv2().data, cv2.COLOR_BGR2GRAY)
-    return OpenCVImageFormat(
+    return NumpyImageFormat(
         cv2.distanceTransform(
             img,
             distance_type,
@@ -196,8 +196,3 @@ NODE_SHELF = fn.Shelf(
         watershed,
     ],
 )
-
-
-
-
-
