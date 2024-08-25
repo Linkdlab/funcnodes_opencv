@@ -227,8 +227,8 @@ def getAffineTransform_points(
     i2y3: int,
 ) -> np.ndarray:
     return cv2.getAffineTransform(
-        np.array([[i1x1, i1y1], [i1x2, i1y2], [i1x3, i1y3]]),
-        np.array([[i2x1, i2y1], [i2x2, i2y2], [i2x3, i2y3]]),
+        np.array([[i1x1, i1y1], [i1x2, i1y2], [i1x3, i1y3]], dtype=np.float32),
+        np.array([[i2x1, i2y1], [i2x2, i2y2], [i2x3, i2y3]], dtype=np.float32),
     )
 
 
@@ -254,8 +254,12 @@ def getPerspectiveTransform_points(
     i2y4: int,
 ) -> np.ndarray:
     return cv2.getPerspectiveTransform(
-        np.array([[i1x1, i1y1], [i1x2, i1y2], [i1x3, i1y3], [i1x4, i1y4]]),
-        np.array([[i2x1, i2y1], [i2x2, i2y2], [i2x3, i2y3], [i2x4, i2y4]]),
+        np.array(
+            [[i1x1, i1y1], [i1x2, i1y2], [i1x3, i1y3], [i1x4, i1y4]], dtype=np.float32
+        ),
+        np.array(
+            [[i2x1, i2y1], [i2x2, i2y2], [i2x3, i2y3], [i2x4, i2y4]], dtype=np.float32
+        ),
     )
 
 
@@ -263,14 +267,14 @@ def getPerspectiveTransform_points(
     node_id="cv2.getAffineTransform",
 )
 def getAffineTransform(src: np.ndarray, dst: np.ndarray) -> np.ndarray:
-    return cv2.getAffineTransform(src, dst)
+    return cv2.getAffineTransform(src.astype(np.float32), dst.astype(np.float32))
 
 
 @fn.NodeDecorator(
     node_id="cv2.getPerspectiveTransform",
 )
 def getPerspectiveTransform(src: np.ndarray, dst: np.ndarray) -> np.ndarray:
-    return cv2.getPerspectiveTransform(src, dst)
+    return cv2.getPerspectiveTransform(src.astype(np.float32), dst.astype(np.float32))
 
 
 NODE_SHELF = fn.Shelf(

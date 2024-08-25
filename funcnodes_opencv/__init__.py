@@ -3,7 +3,19 @@ from . import image_operations, masks, colormodes, filter, components
 import funcnodes as fn
 import funcnodes_numpy as fnnp  # noqa: F401 # for type hinting
 
-__all__ = ["OpenCVImageFormat", "image_operations", "masks"]
+from .colormodes import ColorCodes, color_convert
+
+__all__ = [
+    "OpenCVImageFormat",
+    "image_operations",
+    "masks",
+    "colormodes",
+    "filter",
+    "components",
+    "NODE_SHELF",
+    "ColorCodes",
+    "color_convert",
+]
 
 
 __version__ = "0.1.7"

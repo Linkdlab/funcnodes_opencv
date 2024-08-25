@@ -33,14 +33,24 @@ class BorderTypes(fn.DataEnum):
 )
 def filter2D(
     img: ImageFormat,
+    kernel: Optional[np.ndarray],
     ddepth: int = -1,
-    kernel: Optional[np.ndarray] = None,
     anchor: Optional[Tuple[int, int]] = None,
     delta: int = 0,
     borderType: int = cv2.BORDER_DEFAULT,
 ) -> OpenCVImageFormat:
+    if anchor is None:
+        anchor = (-1, -1)
+
     return OpenCVImageFormat(
-        cv2.filter2D(img.to_cv2().data, ddepth, kernel, anchor, delta, borderType)
+        cv2.filter2D(
+            img.to_cv2().data,
+            ddepth=ddepth,
+            kernel=kernel,
+            anchor=anchor,
+            delta=delta,
+            borderType=borderType,
+        )
     )
 
 
@@ -284,3 +294,5 @@ NODE_SHELF = fn.Shelf(
     description="Nodes for image filtering",
     subshelves=[],
 )
+
+#
