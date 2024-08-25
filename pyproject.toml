@@ -6,13 +6,22 @@ authors = ["Julian Kimmig <julian.kimmig@gmx.net>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
-funcnodes_images = ">=0.1.16"
+python = "^3.11"
+funcnodes_images = "*"
 opencv-python-headless = "^4.9"
-funcnodes = ">=0.2.6"
-funcnodes-numpy = ">=0.1.57"
+funcnodes = "*"
+funcnodes-numpy = "*"
 
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "*"
+pytest = "*"
+funcnodes-module = "*"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.plugins."funcnodes.module"]
+module = "funcnodes_opencv"
+shelf = "funcnodes_opencv:NODE_SHELF"
