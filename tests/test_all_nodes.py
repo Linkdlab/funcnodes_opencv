@@ -5,7 +5,7 @@ import funcnodes_opencv as fnocv
 import cv2
 
 
-SHOW = True
+SHOW = False
 if SHOW:
     try:
         cv2.imshow("test", np.zeros((100, 100, 3), dtype=np.uint8))
