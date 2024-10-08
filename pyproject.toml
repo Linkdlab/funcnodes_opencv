@@ -1,9 +1,16 @@
 [tool.poetry]
 name = "funcnodes-opencv"
-version = "0.2.0"
+version = "0.2.1"
 description = ""
 authors = ["Julian Kimmig <julian.kimmig@gmx.net>"]
 readme = "README.md"
+license = "MIT"
+
+[tool.poetry.urls]
+homepage  = "https://github.com/Linkdlab/funcnodes_opencv"
+source  = "https://github.com/Linkdlab/funcnodes_opencv"
+tracker  = "https://github.com/Linkdlab/funcnodes_opencv/issues"
+download = "https://pypi.org/project/funcnodes-opencv/#files"
 
 [tool.poetry.dependencies]
 python = ">=3.11"
@@ -16,6 +23,7 @@ funcnodes-numpy = "*"
 [tool.poetry.group.dev.dependencies]
 pre-commit = "*"
 pytest = "*"
+funcnodes-module = "*"
 
 [build-system]
 requires = ["poetry-core"]
