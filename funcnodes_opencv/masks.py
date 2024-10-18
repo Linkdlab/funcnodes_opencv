@@ -1,9 +1,8 @@
-from typing import Optional, Tuple, Literal, Union
+from typing import Tuple, Literal, Union
 import cv2
 import numpy as np
 from .imageformat import OpenCVImageFormat, ImageFormat, NumpyImageFormat
 import funcnodes as fn
-import math
 
 
 class ThresholdTypes(fn.DataEnum):
@@ -81,7 +80,8 @@ class AdaptiveThresholdMethods(fn.DataEnum):
 
     Attributes:
         MEAN_C: cv2.ADAPTIVE_THRESH_MEAN_C: threshold value is the mean of the neighbourhood area
-        GAUSSIAN_C: cv2.ADAPTIVE_THRESH_GAUSSIAN_C: threshold value is the weighted sum of the neighbourhood values where weights are a gaussian window
+        GAUSSIAN_C: cv2.ADAPTIVE_THRESH_GAUSSIAN_C: threshold value is the weighted sum of the
+            neighbourhood values where weights are a gaussian window
     """
 
     MEAN_C = cv2.ADAPTIVE_THRESH_MEAN_C
@@ -104,7 +104,6 @@ def adaptive_threshold(
     img: ImageFormat,
     maxval: int = 255,
     adaptive_method: AdaptiveThresholdMethods = AdaptiveThresholdMethods.MEAN_C,
-    ##threshold_type: ThresholdTypes = ThresholdTypes.BINARY,
     block_size: int = 1,
     c: int = 0,
 ) -> OpenCVImageFormat:

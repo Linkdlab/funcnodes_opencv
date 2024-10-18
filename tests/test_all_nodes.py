@@ -2,7 +2,7 @@ from all_nodes_test_base import TestAllNodesBase
 import numpy as np
 import funcnodes_opencv as fnocv
 import cv2
-
+import test_image_processing
 
 SHOW = False
 if SHOW:
@@ -23,6 +23,8 @@ def show(img):
 
 
 class TestAllNodes(TestAllNodesBase):
+    sub_test_classes = [test_image_processing.TestImageProcessing]
+
     def setUp(self) -> None:
         self.image = cv2.resize(cv2.imread("tests/astronaut.jpg"), None, fx=0.5, fy=0.5)
         self.image[self.image.sum(axis=2) == 0] = [1, 1, 1]
