@@ -1,15 +1,15 @@
 [tool.poetry]
 name = "funcnodes-opencv"
-version = "0.2.1"
+version = "0.2.2"
 description = ""
 authors = ["Julian Kimmig <julian.kimmig@gmx.net>"]
 readme = "README.md"
 license = "MIT"
 
 [tool.poetry.urls]
-homepage  = "https://github.com/Linkdlab/funcnodes_opencv"
-source  = "https://github.com/Linkdlab/funcnodes_opencv"
-tracker  = "https://github.com/Linkdlab/funcnodes_opencv/issues"
+homepage = "https://github.com/Linkdlab/funcnodes_opencv"
+source = "https://github.com/Linkdlab/funcnodes_opencv"
+tracker = "https://github.com/Linkdlab/funcnodes_opencv/issues"
 download = "https://pypi.org/project/funcnodes-opencv/#files"
 
 [tool.poetry.dependencies]

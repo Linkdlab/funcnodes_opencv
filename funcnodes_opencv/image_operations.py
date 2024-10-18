@@ -1,9 +1,9 @@
-from typing import Optional
 import cv2
 import numpy as np
 from .imageformat import OpenCVImageFormat, ImageFormat
 import funcnodes as fn
 import math
+from .utils import assert_opencvimg
 
 
 class Interpolations(fn.DataEnum):
@@ -31,17 +31,20 @@ def resize(
     img: ImageFormat,
     h: int = None,
     w: int = None,
-    fx: float = 0,
-    fy: float = 0,
+    fh: float = 1,
+    fw: float = 1,
     interpolation: Interpolations = Interpolations.LINEAR,
 ) -> OpenCVImageFormat:
     interpolation: int = Interpolations.v(interpolation)
-    if w is None and h is None:
-        d = None
-    else:
-        d = (w, h)
+    img = assert_opencvimg(img)
+    if h is None:
+        h = int(round(fh * img.height()))
+
+    if w is None:
+        w = int(round(fw * img.width()))
+
     return OpenCVImageFormat(
-        cv2.resize(img.to_cv2().data, d, fx=fx, fy=fy, interpolation=interpolation)
+        cv2.resize(img.data, dsize=(w, h), interpolation=interpolation)
     )
 
 
