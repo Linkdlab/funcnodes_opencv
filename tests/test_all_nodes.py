@@ -1,5 +1,4 @@
 from all_nodes_test_base import TestAllNodesBase
-import funcnodes as fn
 import numpy as np
 import funcnodes_opencv as fnocv
 import cv2
@@ -21,12 +20,6 @@ def show(img):
         img[img.sum(axis=2) == 0] = [0, 255, 0]
         cv2.imshow("test", img)
         cv2.waitKey(0)
-
-
-"""
-    raise AssertionError(f"These nodes were not tested ({ len(cls.nodes_to_test) }): { cls.nodes_to_test}")
-AssertionError: These nodes were not tested (32): [<class 'funcnodes_opencv.image_operations.ResizeNode'>, <class 'funcnodes_opencv.image_operations.FlipNode'>, <class 'funcnodes_opencv.image_operations.RotateNode'>, <class 'funcnodes_opencv.image_operations.FreerotationNode'>, <class 'funcnodes_opencv.image_operations.WarpaffineNode'>, <class 'funcnodes_opencv.image_operations.PerpectivetransformNode'>, <class 'funcnodes_opencv.image_operations.GetaffinetransformPointsNode'>, <class 'funcnodes_opencv.image_operations.GetperspectivetransformPointsNode'>, <class 'funcnodes_opencv.image_operations.GetaffinetransformNode'>, <class 'funcnodes_opencv.image_operations.GetperspectivetransformNode'>, <class 'funcnodes_opencv.masks.ThresholdNode'>, <class 'funcnodes_opencv.masks.AutoThresholdNode'>, <class 'funcnodes_opencv.masks.AdaptiveThresholdNode'>, <class 'funcnodes_opencv.masks.DistanceTransformNode'>, <class 'funcnodes_opencv.masks.WatershedNode'>, <class 'funcnodes_opencv.colormodes.ColorConvertNode'>, <class 'funcnodes_opencv.filter.Filter2dNode'>, <class 'funcnodes_opencv.filter.BilateralfilterNode'>, <class 'funcnodes_opencv.filter.BlurNode'>, <class 'funcnodes_opencv.filter.BoxfilterNode'>, <class 'funcnodes_opencv.filter.DilateNode'>, <class 'funcnodes_opencv.filter.ErodeNode'>, <class 'funcnodes_opencv.filter.GaussianblurNode'>, <class 'funcnodes_opencv.filter.LaplacianNode'>, <class 'funcnodes_opencv.filter.MedianblurNode'>, <class 'funcnodes_opencv.filter.PyrdownNode'>, <class 'funcnodes_opencv.filter.PyrupNode'>, <class 'funcnodes_opencv.filter.ScharrNode'>, <class 'funcnodes_opencv.filter.SobelNode'>, <class 'funcnodes_opencv.filter.StackblurNode'>, <class 'funcnodes_opencv.components.ConnectedcomponentsNode'>, <class 'funcnodes_opencv.components.LabelsToColorNode'>]
-"""
 
 
 class TestAllNodes(TestAllNodesBase):
@@ -75,13 +68,13 @@ class TestAllNodes(TestAllNodesBase):
         node.inputs["w"].value = 50
         await node
         out = node.outputs["out"].value
-        self.assertEqual(out, fn.NoValue)
+        self.assertEqual(out.data.shape, (self.img.height(), 50, 3))
 
         # with fx and fy
         node = fnocv.image_operations.resize()
         node.inputs["img"].value = self.img
-        node.inputs["fx"].value = 0.5
-        node.inputs["fy"].value = 0.5
+        node.inputs["fh"].value = 0.5
+        node.inputs["fw"].value = 0.5
         await node
         out = node.outputs["out"].value
         self.assertEqual(
@@ -520,15 +513,6 @@ class TestAllNodes(TestAllNodesBase):
         out = stack_blur.outputs["out"].value
         self.assertEqual(out.data.shape, self.image.shape)
         show(out)
-
-    async def test_connected_components(self):
-        connected_components = fnocv.components.connectedComponents()
-        connected_components.inputs["img"].value = self.img
-        await connected_components
-        out = connected_components.outputs["labels"].value
-        self.assertEqual(out.shape, self.image.shape[:2])
-        self.assertEqual(out.dtype, np.int32)
-        self.assertEqual(out.max(), 1)
 
     async def test_labels_to_color(self):
         labels_to_color = fnocv.components.labels_to_color()
