@@ -1,8 +1,13 @@
-from all_nodes_test_base import TestAllNodesBase
+import sys
+import os
 import numpy as np
 import funcnodes_opencv as fnocv
 import cv2
-import test_image_processing
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from all_nodes_test_base import TestAllNodesBase  # noqa: E402
+import test_image_processing  # noqa: E402
 
 SHOW = False
 if SHOW:
