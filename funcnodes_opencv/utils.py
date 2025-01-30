@@ -1,5 +1,7 @@
 import numpy as np
-from .imageformat import OpenCVImageFormat, ImageFormat
+from typing import Literal
+import cv2
+from .imageformat import OpenCVImageFormat, ImageFormat, NumpyImageFormat
 
 
 def normalize(img: np.ndarray, to_uint8: bool = True):
@@ -44,3 +46,35 @@ def assert_opencvimg(img) -> OpenCVImageFormat:
         return OpenCVImageFormat(img)
 
     raise TypeError("img must be an OpenCVImageFormat, ImageFormat or np.ndarray")
+
+
+def assert_opencvdata(img, channel: Literal[1, 3, None] = None) -> np.ndarray:
+    if isinstance(img, OpenCVImageFormat):
+        arr = img.data
+    elif isinstance(img, ImageFormat):
+        arr = img.to_cv2().data
+    elif isinstance(img, np.ndarray):
+        arr = img.copy()
+    else:
+        arr = NumpyImageFormat(img).to_cv2().data
+
+    if arr.ndim == 2:
+        if channel == 1 or channel is None:
+            return arr
+        if channel == 3:
+            return np.repeat(arr[:, :, np.newaxis], 3, axis=2)
+    if arr.ndim == 3:
+        if arr.shape[2] == 1:
+            if channel == 1 or channel is None:
+                return arr[:, :, 0]
+            if channel == 3:
+                return np.repeat(arr, 3, axis=2)
+        if arr.shape[2] == 3:
+            if channel == 3 or channel is None:
+                return arr
+            if channel == 1:
+                return cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY)
+
+        raise ValueError(f"Image has {arr.shape[2]} channels, expected {channel}")
+
+    raise ValueError(f"Image has {arr.ndim} dimensions, expected 2 or 3")

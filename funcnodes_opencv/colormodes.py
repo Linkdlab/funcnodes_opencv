@@ -1,9 +1,6 @@
-from typing import Optional, Tuple
-import cv2
-import numpy as np
 from .imageformat import OpenCVImageFormat, ImageFormat, NumpyImageFormat
 import funcnodes as fn
-import math
+from .utils import assert_opencvimg
 
 
 class ColorCodes(fn.DataEnum):
@@ -31,7 +28,9 @@ def color_convert(
     code: ColorCodes = ColorCodes.GRAY,
 ) -> NumpyImageFormat:
     code = ColorCodes.v(code)
-    return NumpyImageFormat(img.to_cv2().to_colorspace(code))
+    img = assert_opencvimg(img)
+
+    return NumpyImageFormat(img.to_colorspace(code))
 
 
 NODE_SHELF = fn.Shelf(

@@ -1,12 +1,13 @@
 """
 Components functions of opencv for funcnodes
 """
+
 from typing import Literal, Tuple
 import funcnodes as fn
 import cv2
 import numpy as np
 from .imageformat import OpenCVImageFormat, ImageFormat
-from .utils import normalize, LUT
+from .utils import normalize, LUT, assert_opencvdata
 
 
 @fn.NodeDecorator(
@@ -22,8 +23,8 @@ def connectedComponents(
     connectivity: Literal[4, 8] = 8,
 ) -> Tuple[int, np.ndarray]:
     connectivity = int(connectivity)
-    img = cv2.cvtColor(img.to_cv2().data, cv2.COLOR_BGR2GRAY)
-    img = normalize(img)
+    data = assert_opencvdata(img, 1)
+    img = normalize(data)
     retval, labels = cv2.connectedComponents(img, connectivity=connectivity)
     return retval, labels
 
