@@ -1,11 +1,13 @@
 """
 filter implementations of openCV for funcnodes
 """
+
 from typing import Optional, Tuple, Literal
 import cv2
 import numpy as np
 from .imageformat import OpenCVImageFormat, ImageFormat
 import funcnodes as fn
+from .utils import assert_opencvdata
 
 
 class BorderTypes(fn.DataEnum):
@@ -42,9 +44,11 @@ def filter2D(
     if anchor is None:
         anchor = (-1, -1)
 
+    data = assert_opencvdata(img)
+
     return OpenCVImageFormat(
         cv2.filter2D(
-            img.to_cv2().data,
+            data,
             ddepth=ddepth,
             kernel=kernel,
             anchor=anchor,
@@ -65,7 +69,7 @@ def bilateralFilter(
     sigmaSpace: float = 75,
 ) -> OpenCVImageFormat:
     return OpenCVImageFormat(
-        cv2.bilateralFilter(img.to_cv2().data, d, sigmaColor, sigmaSpace)
+        cv2.bilateralFilter(assert_opencvdata(img), d, sigmaColor, sigmaSpace)
     )
 
 
@@ -82,7 +86,7 @@ def blur(
         kh = kw
 
     ksize = (kw, kh)
-    return OpenCVImageFormat(cv2.blur(img.to_cv2().data, ksize))
+    return OpenCVImageFormat(cv2.blur(assert_opencvdata(img), ksize))
 
 
 @fn.NodeDecorator(
@@ -106,7 +110,7 @@ def boxFilter(
 
     ksize = (kw, kh)
     return OpenCVImageFormat(
-        cv2.boxFilter(img.to_cv2().data, -1, ksize=ksize, normalize=normalize)
+        cv2.boxFilter(assert_opencvdata(img), -1, ksize=ksize, normalize=normalize)
     )
 
 
@@ -120,7 +124,7 @@ def dilate(
     iterations: int = 1,
 ) -> OpenCVImageFormat:
     return OpenCVImageFormat(
-        cv2.dilate(img.to_cv2().data, kernel=kernel, iterations=iterations)
+        cv2.dilate(assert_opencvdata(img), kernel=kernel, iterations=iterations)
     )
 
 
@@ -134,7 +138,7 @@ def erode(
     iterations: int = 1,
 ) -> OpenCVImageFormat:
     return OpenCVImageFormat(
-        cv2.erode(img.to_cv2().data, kernel=kernel, iterations=iterations)
+        cv2.erode(assert_opencvdata(img), kernel=kernel, iterations=iterations)
     )
 
 
@@ -160,7 +164,9 @@ def GaussianBlur(
     ksize = (kw, kh)
     if sigmaY is None:
         sigmaY = sigmaX
-    return OpenCVImageFormat(cv2.GaussianBlur(img.to_cv2().data, ksize, sigmaX, sigmaY))
+    return OpenCVImageFormat(
+        cv2.GaussianBlur(assert_opencvdata(img), ksize, sigmaX, sigmaY)
+    )
 
 
 @fn.NodeDecorator(
@@ -176,7 +182,7 @@ def Laplacian(
     if ksize % 2 == 0:
         ksize += 1
     return OpenCVImageFormat(
-        cv2.Laplacian(img.to_cv2().data, -1, ksize=ksize, scale=scale, delta=delta)
+        cv2.Laplacian(assert_opencvdata(img), -1, ksize=ksize, scale=scale, delta=delta)
     )
 
 
@@ -190,7 +196,7 @@ def medianBlur(
 ) -> OpenCVImageFormat:
     if ksize % 2 == 0:
         ksize += 1
-    return OpenCVImageFormat(cv2.medianBlur(img.to_cv2().data, ksize))
+    return OpenCVImageFormat(cv2.medianBlur(assert_opencvdata(img), ksize))
 
 
 @fn.NodeDecorator(
@@ -200,7 +206,7 @@ def medianBlur(
 def pyrDown(
     img: ImageFormat,
 ) -> OpenCVImageFormat:
-    return OpenCVImageFormat(cv2.pyrDown(img.to_cv2().data))
+    return OpenCVImageFormat(cv2.pyrDown(assert_opencvdata(img)))
 
 
 @fn.NodeDecorator(
@@ -210,7 +216,7 @@ def pyrDown(
 def pyrUp(
     img: ImageFormat,
 ) -> OpenCVImageFormat:
-    return OpenCVImageFormat(cv2.pyrUp(img.to_cv2().data))
+    return OpenCVImageFormat(cv2.pyrUp(assert_opencvdata(img)))
 
 
 @fn.NodeDecorator(
@@ -225,7 +231,7 @@ def Scharr(
     delta: int = 0,
 ) -> OpenCVImageFormat:
     return OpenCVImageFormat(
-        cv2.Scharr(img.to_cv2().data, -1, dx=dx, dy=dy, scale=scale, delta=delta)
+        cv2.Scharr(assert_opencvdata(img), -1, dx=dx, dy=dy, scale=scale, delta=delta)
     )
 
 
@@ -243,7 +249,7 @@ def Sobel(
 ) -> OpenCVImageFormat:
     return OpenCVImageFormat(
         cv2.Sobel(
-            img.to_cv2().data,
+            assert_opencvdata(img),
             -1,
             dx=dx,
             dy=dy,
@@ -270,7 +276,7 @@ def stackBlur(
     if kh % 2 == 0:
         kh += 1
     ksize = (kw, kh)
-    return OpenCVImageFormat(cv2.stackBlur(img.to_cv2().data, ksize))
+    return OpenCVImageFormat(cv2.stackBlur(assert_opencvdata(img), ksize))
 
 
 NODE_SHELF = fn.Shelf(

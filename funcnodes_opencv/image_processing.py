@@ -4,7 +4,7 @@ import numpy as np
 from .imageformat import OpenCVImageFormat, ImageFormat
 import funcnodes as fn
 from exposedfunctionality import controlled_wrapper
-from .utils import assert_opencvimg
+from .utils import assert_opencvdata
 
 
 class RetrievalModes(fn.DataEnum):
@@ -54,7 +54,7 @@ class ContourApproximationModes(fn.DataEnum):
 )
 @controlled_wrapper(cv2.findContours, wrapper_attribute="__fnwrapped__")
 def _findContours(
-    image: ImageFormat,
+    img: ImageFormat,
     mode: RetrievalModes = RetrievalModes.EXTERNAL,
     method: ContourApproximationModes = ContourApproximationModes.SIMPLE,
     offset_dx: int = 0,
@@ -63,10 +63,9 @@ def _findContours(
     offset = (offset_dx, offset_dy)
     mode = RetrievalModes.v(mode)
     method = ContourApproximationModes.v(method)
-    image = assert_opencvimg(image)
 
     contours, hierarchy = cv2.findContours(
-        image=image.to_cv2().to_colorspace("GRAY"),
+        image=assert_opencvdata(img, 1),
         mode=mode,
         method=method,
         offset=offset,
@@ -101,11 +100,12 @@ def rgb_from_hexstring(hexstring: str) -> Tuple[int, int, int]:
         "io": {
             "color": {"type": "color"},
         },
+        "data": {"src": "out"},
     },
 )
 @controlled_wrapper(cv2.drawContours, wrapper_attribute="__fnwrapped__")
 def _drawContours(
-    image: ImageFormat,
+    img: ImageFormat,
     contours: np.ndarray,
     contourIdx: int = -1,
     color: Optional[str] = "00FF00",
@@ -113,7 +113,7 @@ def _drawContours(
     lineType: LineTypes = LineTypes.LINE_8,
     offset_dx: int = 0,
     offset_dy: int = 0,
-) -> np.ndarray:
+) -> OpenCVImageFormat:
     color = rgb_from_hexstring(color)
 
     color = color[::-1]
@@ -123,7 +123,7 @@ def _drawContours(
 
     return OpenCVImageFormat(
         cv2.drawContours(
-            image=image.to_cv2().data,
+            image=assert_opencvdata(img),
             contours=contours,
             contourIdx=contourIdx,
             color=color,

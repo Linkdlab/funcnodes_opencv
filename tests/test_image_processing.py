@@ -29,7 +29,7 @@ class TestImageProcessing(unittest.IsolatedAsyncioTestCase):
 
     async def test_findcontours(self):
         cnts: fn.Node = _findContours()
-        cnts.inputs["image"].value = self.img
+        cnts.inputs["img"].value = self.img
         await cnts
         cont = cnts.outputs["contours"].value
         self.assertIsInstance(cont, list)
@@ -37,9 +37,9 @@ class TestImageProcessing(unittest.IsolatedAsyncioTestCase):
 
     async def test_drawcontours(self):
         cnts: fn.Node = _findContours()
-        cnts.inputs["image"].value = self.img
+        cnts.inputs["img"].value = self.img
         draw_cnts: fn.Node = _drawContours()
-        draw_cnts.inputs["image"].value = self.img
+        draw_cnts.inputs["img"].value = self.img
         draw_cnts.inputs["contours"].connect(cnts.outputs["contours"])
 
         await fn.run_until_complete(draw_cnts, cnts)
