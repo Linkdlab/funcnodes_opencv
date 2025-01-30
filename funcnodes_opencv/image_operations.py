@@ -3,7 +3,7 @@ import numpy as np
 from .imageformat import OpenCVImageFormat, ImageFormat
 import funcnodes as fn
 import math
-from .utils import assert_opencvimg
+from .utils import assert_opencvimg, assert_opencvdata
 
 
 class Interpolations(fn.DataEnum):
@@ -57,7 +57,7 @@ def flip(
     flip_code: FlipCodes = FlipCodes.HORIZONTAL,
 ) -> OpenCVImageFormat:
     flip_code = FlipCodes.v(flip_code)
-    return OpenCVImageFormat(cv2.flip(img.to_cv2().data, flip_code))
+    return OpenCVImageFormat(cv2.flip(assert_opencvdata(img), flip_code))
 
 
 class RoationCode(fn.DataEnum):
@@ -77,7 +77,7 @@ def rotate(
     img: ImageFormat, rot: RoationCode = RoationCode.ROTATE_90_CLOCKWISE
 ) -> OpenCVImageFormat:
     rot = RoationCode.v(rot)
-    return OpenCVImageFormat(cv2.rotate(img.to_cv2().data, rot))
+    return OpenCVImageFormat(cv2.rotate(assert_opencvdata(img), rot))
 
 
 class FreeRotationCropMode(fn.DataEnum):
@@ -144,7 +144,7 @@ def freeRotation(
         funcnodes_opencv.OpenCVImageFormat: The rotated image.
     """
 
-    img = img.to_cv2().data
+    img = assert_opencvdata(img)
 
     cx = img.shape[1] / 2
     cy = img.shape[0] / 2
@@ -199,7 +199,7 @@ def freeRotation(
     default_render_options={"data": {"src": "out"}},
 )
 def warpAffine(img: ImageFormat, M: np.ndarray, w: int, h: int) -> OpenCVImageFormat:
-    return OpenCVImageFormat(cv2.warpAffine(img.to_cv2().data, M, (w, h)))
+    return OpenCVImageFormat(cv2.warpAffine(assert_opencvdata(img), M, (w, h)))
 
 
 @fn.NodeDecorator(
@@ -209,7 +209,7 @@ def warpAffine(img: ImageFormat, M: np.ndarray, w: int, h: int) -> OpenCVImageFo
 def perpectiveTransform(
     img: ImageFormat, M: np.ndarray, w: int, h: int
 ) -> OpenCVImageFormat:
-    return OpenCVImageFormat(cv2.warpPerspective(img.to_cv2().data, M, (w, h)))
+    return OpenCVImageFormat(cv2.warpPerspective(assert_opencvdata(img), M, (w, h)))
 
 
 @fn.NodeDecorator(

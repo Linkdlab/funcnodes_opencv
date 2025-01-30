@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from .imageformat import OpenCVImageFormat, ImageFormat, NumpyImageFormat
 import funcnodes as fn
+from .utils import assert_opencvdata
 
 
 class ThresholdTypes(fn.DataEnum):
@@ -52,7 +53,9 @@ def threshold(
     type: ThresholdTypes = ThresholdTypes.BINARY,
 ) -> OpenCVImageFormat:
     type = ThresholdTypes.v(type)
-    return OpenCVImageFormat(cv2.threshold(img.to_cv2().data, thresh, maxval, type)[1])
+    return OpenCVImageFormat(
+        cv2.threshold(assert_opencvdata(img), thresh, maxval, type)[1]
+    )
 
 
 @fn.NodeDecorator(
@@ -70,7 +73,7 @@ def auto_threshold(
     type: AutoThresholdTypes = AutoThresholdTypes.OTSU,
 ) -> Tuple[OpenCVImageFormat, int]:
     type = AutoThresholdTypes.v(type)
-    thresh, img = cv2.threshold(img.to_cv2().to_colorspace("GRAY"), 0, maxval, type)
+    thresh, img = cv2.threshold(assert_opencvdata(img, 1), 0, maxval, type)
     return OpenCVImageFormat(img), thresh
 
 
@@ -112,7 +115,7 @@ def adaptive_threshold(
     block_size = 2 * int(block_size) + 1
     return OpenCVImageFormat(
         cv2.adaptiveThreshold(
-            img.to_cv2().to_colorspace("GRAY"),
+            assert_opencvdata(img, 1),
             maxval,
             adaptive_method,
             cv2.THRESH_BINARY,
@@ -158,7 +161,7 @@ def distance_transform(
     mask_size: Literal[0, 3, 5] = 3,
 ) -> OpenCVImageFormat:
     distance_type = DistanceTypes.v(distance_type)
-    img = cv2.cvtColor(img.to_cv2().data, cv2.COLOR_BGR2GRAY)
+    img = cv2.cvtColor(assert_opencvdata(img), cv2.COLOR_BGR2GRAY)
     return NumpyImageFormat(
         cv2.distanceTransform(
             img,
@@ -175,9 +178,8 @@ def watershed(
     img: ImageFormat,
     markers: Union[ImageFormat, np.ndarray],
 ) -> np.ndarray:
-    if isinstance(markers, ImageFormat):
-        markers: np.ndarray = cv2.cvtColor(markers.to_cv2().data, cv2.COLOR_BGR2GRAY)
-    img = img.to_cv2().data
+    markers: np.ndarray = assert_opencvdata(img, 1)
+    img = assert_opencvdata(img)
     markers = markers.astype(np.int32)
 
     return cv2.watershed(img, markers)
