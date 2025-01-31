@@ -336,6 +336,31 @@ class TestAllNodes(TestAllNodesBase):
         self.assertEqual(out.data.shape, self.image.shape)
         show(out)
 
+    async def test_inrange_single_channel(self):
+        inrange = fnocv.masks.in_range_singel_channel()
+        inrange.inputs["img"].value = self.img
+        inrange.inputs["lower"].value = 100
+        inrange.inputs["upper"].value = 200
+
+        await inrange
+
+        out = inrange.outputs["out"].value
+        self.assertEqual(out.data.shape[:2], self.image.shape[:2])
+
+    async def test_inrange(self):
+        inrange = fnocv.masks.in_range()
+        inrange.inputs["img"].value = self.img
+        inrange.inputs["lower_c1"].value = 100
+        inrange.inputs["upper_c1"].value = 200
+        inrange.inputs["lower_c2"].value = 100
+        inrange.inputs["upper_c2"].value = 200
+        inrange.inputs["lower_c3"].value = 100
+        inrange.inputs["upper_c3"].value = 200
+
+        await inrange
+        out = inrange.outputs["out"].value
+        self.assertEqual(out.data.shape[:2], self.image.shape[:2])
+
     async def test_adaptive_threshold(self):
         adaptive_threshold = fnocv.masks.adaptive_threshold()
         adaptive_threshold.inputs["img"].value = self.img

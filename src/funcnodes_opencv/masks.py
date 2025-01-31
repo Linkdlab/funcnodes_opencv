@@ -185,6 +185,60 @@ def watershed(
     return cv2.watershed(img, markers)
 
 
+@fn.NodeDecorator(
+    node_id="cv2.in_range_sc",
+    node_name=" In Range Single Channel",
+    default_io_options={
+        "lower": {"value_options": {"min": 0, "max": 255}},
+        "upper": {"value_options": {"min": 0, "max": 255}},
+    },
+    default_render_options={"data": {"src": "out"}},
+)
+def in_range_singel_channel(
+    img: ImageFormat, lower: int, upper: int
+) -> OpenCVImageFormat:
+    return OpenCVImageFormat(
+        cv2.inRange(
+            assert_opencvdata(img, channel=1), np.array([lower]), np.array([upper])
+        )
+    )
+
+
+@fn.NodeDecorator(
+    node_id="cv2.in_range",
+    node_name="In Range",
+    default_io_options={
+        "lower_c1": {"value_options": {"min": 0, "max": 255}},
+        "upper_c1": {"value_options": {"min": 0, "max": 255}},
+        "lower_c2": {"value_options": {"min": 0, "max": 255}},
+        "upper_c2": {"value_options": {"min": 0, "max": 255}},
+        "lower_c3": {"value_options": {"min": 0, "max": 255}},
+        "upper_c3": {"value_options": {"min": 0, "max": 255}},
+    },
+    default_render_options={"data": {"src": "out"}},
+)
+def in_range(
+    img: ImageFormat,
+    lower_c1: int = 0,
+    upper_c1: int = 255,
+    lower_c2: int = 0,
+    upper_c2: int = 255,
+    lower_c3: int = 0,
+    upper_c3: int = 255,
+) -> OpenCVImageFormat:
+    data = assert_opencvdata(img)
+    if data.shape[2] == 1:
+        arr = cv2.inRange(data, np.array([lower_c1]), np.array([upper_c1]))
+    else:
+        arr = cv2.inRange(
+            data,
+            np.array([lower_c1, lower_c2, lower_c3]),
+            np.array([upper_c1, upper_c2, upper_c3]),
+        )
+
+    return OpenCVImageFormat(arr)
+
+
 NODE_SHELF = fn.Shelf(
     name="Masking and Thresholding",
     description="OpenCV image masking and thresholding nodes.",
@@ -193,6 +247,8 @@ NODE_SHELF = fn.Shelf(
         threshold,
         auto_threshold,
         adaptive_threshold,
+        in_range_singel_channel,
+        in_range,
         distance_transform,
         watershed,
     ],
