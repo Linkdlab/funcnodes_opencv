@@ -342,11 +342,10 @@ sketch
 
 /dist/*
 !/dist/*.html
-funcnodesDjango/funcnodes/static/funcnodes/bundle.js
-funcnodesDjango/funcnodes/static/funcnodes/funcnodes.zip
 /dev/
 /test.sh
 
 !funcnodes/lib
 
 /.licensecheck
+/.funcnodes
