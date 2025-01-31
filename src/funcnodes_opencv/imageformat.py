@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from funcnodes_images.imagecontainer import register_imageformat
+from funcnodes_images.imagecontainer import register_imageformat, ImageFormat  # noqa: F401
 from funcnodes_images._numpy import NumpyImageFormat
 from funcnodes_images._pillow import PillowImageFormat
 from funcnodes_images.utils import calc_new_size
