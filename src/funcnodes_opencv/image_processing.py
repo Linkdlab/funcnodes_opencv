@@ -109,7 +109,7 @@ def _drawContours(
     contours: np.ndarray,
     contourIdx: int = -1,
     color: Optional[str] = "00FF00",
-    thickness=1,
+    thickness: int = 1,
     lineType: LineTypes = LineTypes.LINE_8,
     offset_dx: int = 0,
     offset_dy: int = 0,
