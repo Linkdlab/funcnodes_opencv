@@ -8,8 +8,6 @@ from funcnodes_opencv.imageformat import OpenCVImageFormat
 # from funcnodes_files import FileUpload
 # import base64
 
-fn.config.IN_NODE_TEST = True
-
 
 class TestImageProcessing(unittest.IsolatedAsyncioTestCase):
     def setUp(self) -> None:
@@ -45,3 +43,7 @@ class TestImageProcessing(unittest.IsolatedAsyncioTestCase):
         await fn.run_until_complete(draw_cnts, cnts)
         image = draw_cnts.outputs["out"].value
         self.assertIsInstance(image, OpenCVImageFormat)
+
+        arr = image.data
+
+        self.assertEqual(arr.ndim, 3)
