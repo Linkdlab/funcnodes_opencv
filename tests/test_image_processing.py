@@ -45,3 +45,7 @@ class TestImageProcessing(unittest.IsolatedAsyncioTestCase):
         await fn.run_until_complete(draw_cnts, cnts)
         image = draw_cnts.outputs["out"].value
         self.assertIsInstance(image, OpenCVImageFormat)
+
+        arr = image.data
+
+        self.assertEqual(arr.ndim, 3)
