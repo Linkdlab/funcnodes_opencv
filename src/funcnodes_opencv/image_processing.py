@@ -123,7 +123,7 @@ def _drawContours(
 
     return OpenCVImageFormat(
         cv2.drawContours(
-            image=assert_opencvdata(img),
+            image=assert_opencvdata(img, 3),
             contours=contours,
             contourIdx=contourIdx,
             color=color,
