@@ -8,8 +8,6 @@ from funcnodes_opencv.imageformat import OpenCVImageFormat
 # from funcnodes_files import FileUpload
 # import base64
 
-fn.config.IN_NODE_TEST = True
-
 
 class TestImageProcessing(unittest.IsolatedAsyncioTestCase):
     def setUp(self) -> None:
