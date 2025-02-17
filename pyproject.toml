@@ -1,11 +1,12 @@
 [project]
 name = "funcnodes-opencv"
-version = "0.2.4"
+version = "0.2.5"
 description = ""
 readme = "README.md"
 dependencies = [
  "funcnodes_images",
- "opencv-python-headless>=4.9",
+ "opencv-python-headless>=4.9; sys_platform != 'emscripten'",
+ "opencv-python; sys_platform == 'emscripten'",
  "funcnodes",
  "funcnodes-numpy",
 ]
