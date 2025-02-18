@@ -1,6 +1,11 @@
 import funcnodes as fn
 import unittest
-from funcnodes_opencv.image_processing import _findContours, _drawContours
+from funcnodes_opencv.image_processing import (
+    _findContours,
+    _drawContours,
+    _circle,
+    _ellipse,
+)
 import cv2
 import funcnodes_opencv as fnocv
 from funcnodes_opencv.imageformat import OpenCVImageFormat
@@ -39,11 +44,28 @@ class TestImageProcessing(unittest.IsolatedAsyncioTestCase):
         draw_cnts: fn.Node = _drawContours()
         draw_cnts.inputs["img"].value = self.img
         draw_cnts.inputs["contours"].connect(cnts.outputs["contours"])
-
         await fn.run_until_complete(draw_cnts, cnts)
-        image = draw_cnts.outputs["out"].value
-        self.assertIsInstance(image, OpenCVImageFormat)
+        image_w_cnts = draw_cnts.outputs["out"].value
+        self.assertIsInstance(image_w_cnts, OpenCVImageFormat)
 
-        arr = image.data
+    async def test_draw_circles(self):
+        draw_circle: fn.Node = _circle()
+        draw_circle.inputs["img"].value = self.img
+        draw_circle.inputs["center_x"].value = [480, 215]
+        draw_circle.inputs["center_y"].value = [630, 545]
+        draw_circle.inputs["radius"].value = [120, 45]
+        await draw_circle
+        image_w_circle = draw_circle.outputs["out"].value
+        self.assertIsInstance(image_w_circle, OpenCVImageFormat)
 
-        self.assertEqual(arr.ndim, 3)
+    async def test_drawellipse(self):
+        draw_ellipse: fn.Node = _ellipse()
+        draw_ellipse.inputs["img"].value = self.img
+        draw_ellipse.inputs["center_x"].value = [480, 215]
+        draw_ellipse.inputs["center_y"].value = [630, 545]
+        draw_ellipse.inputs["axes_x"].value = [120, 45]
+        draw_ellipse.inputs["axes_y"].value = [60, 30]
+        draw_ellipse.inputs["angle"].value = [0, 45]
+        await draw_ellipse
+        image_w_ellipse = draw_ellipse.outputs["out"].value
+        self.assertIsInstance(image_w_ellipse, OpenCVImageFormat)
