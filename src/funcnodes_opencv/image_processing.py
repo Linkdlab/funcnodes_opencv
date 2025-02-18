@@ -134,8 +134,104 @@ def _drawContours(
     )
 
 
+@fn.NodeDecorator(
+    "cv2.circle",
+    name="circle",
+    default_render_options={
+        "io": {
+            "color": {"type": "color"},
+        },
+        "data": {"src": "out"},
+    },
+)
+@controlled_wrapper(cv2.circle, wrapper_attribute="__fnwrapped__")
+def _circle(
+    img: ImageFormat,
+    center_x: list,
+    center_y: list,
+    radius: list,
+    color: Optional[str] = "00FF00",
+    thickness: int = 1,
+    lineType: LineTypes = LineTypes.LINE_8,
+    shift: int = 0,
+) -> OpenCVImageFormat:
+    assert len(center_x) == len(center_y) == len(radius), (
+        "center_x, center_y, and radius lists must have the same length"
+    )
+    color = rgb_from_hexstring(color)
+
+    color = color[::-1]
+    lineType = LineTypes.v(lineType)
+    for i in range(len(center_x)):
+        cent = (int(center_x[i]), int(center_y[i]))
+        rad = radius[i]
+        return OpenCVImageFormat(
+            cv2.circle(
+                img=assert_opencvdata(img, 3),
+                center=cent,
+                radius=rad,
+                color=color,
+                thickness=thickness,
+                lineType=lineType,
+                shift=int(shift),
+            )
+        )
+
+
+@fn.NodeDecorator(
+    "cv2.ellipse",
+    name="ellipse",
+    default_render_options={
+        "io": {
+            "color": {"type": "color"},
+        },
+        "data": {"src": "out"},
+    },
+)
+@controlled_wrapper(cv2.ellipse, wrapper_attribute="__fnwrapped__")
+def _ellipse(
+    img: ImageFormat,
+    center_x: list,
+    center_y: list,
+    axes_x: list,
+    axes_y: list,
+    angle: list,
+    startAngle: int = 0,
+    endAngle: int = 360,
+    color: Optional[str] = "00FF00",
+    thickness: int = 1,
+    lineType: LineTypes = LineTypes.LINE_8,
+    shift: int = 0,
+) -> OpenCVImageFormat:
+    assert len(center_x) == len(center_y) == len(axes_x) == len(axes_y) == len(angle), (
+        "center_x, center_y, axes_x, axes_y, and angle lists must have the same length"
+    )
+    color = rgb_from_hexstring(color)
+    color = color[::-1]
+    lineType = LineTypes.v(lineType)
+
+    for i in range(len(center_x)):
+        center = (int(center_x[i]), int(center_y[i]))
+        axes = (int(axes_x[i]), int(axes_y[i]))
+        ang = angle[i]
+        return OpenCVImageFormat(
+            cv2.ellipse(
+                img=assert_opencvdata(img, 3),
+                center=center,
+                axes=axes,
+                angle=ang,
+                startAngle=startAngle,
+                endAngle=endAngle,
+                color=color,
+                thickness=thickness,
+                lineType=lineType,
+                shift=int(shift),
+            )
+        )
+
+
 Drawing_Functions_NODE_SHELF = fn.Shelf(
-    nodes=[_drawContours],
+    nodes=[_drawContours, _circle, _ellipse],
     subshelves=[],
     name="Drawing_Functions",
     description="",
