@@ -149,7 +149,7 @@ def _circle(
     img: ImageFormat,
     center_x: Union[list, int],
     center_y: Union[list, int],
-    radius: Union[list, int],
+    radius: Union[list, float],
     color: Optional[str] = "00FF00",
     thickness: int = 1,
     lineType: LineTypes = LineTypes.LINE_8,
@@ -159,7 +159,7 @@ def _circle(
         center_x = [center_x]
     if isinstance(center_y, int):
         center_y = [center_y]
-    if isinstance(radius, int):
+    if isinstance(radius, float):
         radius = [radius]
     assert len(center_x) == len(center_y) == len(radius), (
         "center_x, center_y, and radius lists must have the same length"
@@ -201,7 +201,7 @@ def _ellipse(
     center_y: Union[list, int],
     axes_x: Union[list, int],
     axes_y: Union[list, int],
-    angle: Union[list, int],
+    angle: Union[list, float],
     startAngle: int = 0,
     endAngle: int = 360,
     color: Optional[str] = "00FF00",
@@ -217,7 +217,7 @@ def _ellipse(
         axes_x = [axes_x]
     if isinstance(axes_y, int):
         axes_y = [axes_y]
-    if isinstance(angle, int):
+    if isinstance(angle, float):
         angle = [angle]
 
     assert len(center_x) == len(center_y) == len(axes_x) == len(axes_y) == len(angle), (
