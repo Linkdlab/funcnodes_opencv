@@ -171,7 +171,7 @@ def _circle(
     for i in range(len(center_x)):
         cent = (int(center_x[i]), int(center_y[i]))
         rad = int(radius[i])
-        return OpenCVImageFormat(
+        OpenCVImageFormat(
             cv2.circle(
                 img=assert_opencvdata(img, 3),
                 center=cent,
@@ -182,6 +182,7 @@ def _circle(
                 shift=int(shift),
             )
         )
+    return img
 
 
 @fn.NodeDecorator(
@@ -231,7 +232,7 @@ def _ellipse(
         center = (int(center_x[i]), int(center_y[i]))
         axes = (int(axes_x[i]), int(axes_y[i]))
         ang = int(angle[i])
-        return OpenCVImageFormat(
+        OpenCVImageFormat(
             cv2.ellipse(
                 img=assert_opencvdata(img, 3),
                 center=center,
@@ -245,6 +246,7 @@ def _ellipse(
                 shift=int(shift),
             )
         )
+    return img
 
 
 Drawing_Functions_NODE_SHELF = fn.Shelf(
