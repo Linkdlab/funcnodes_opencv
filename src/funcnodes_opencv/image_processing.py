@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 import cv2
 import numpy as np
 from .imageformat import OpenCVImageFormat, ImageFormat
@@ -147,14 +147,20 @@ def _drawContours(
 @controlled_wrapper(cv2.circle, wrapper_attribute="__fnwrapped__")
 def _circle(
     img: ImageFormat,
-    center_x: list,
-    center_y: list,
-    radius: list,
+    center_x: Union[list, int],
+    center_y: Union[list, int],
+    radius: Union[list, int],
     color: Optional[str] = "00FF00",
     thickness: int = 1,
     lineType: LineTypes = LineTypes.LINE_8,
     shift: int = 0,
 ) -> OpenCVImageFormat:
+    if isinstance(center_x, int):
+        center_x = [center_x]
+    if isinstance(center_y, int):
+        center_y = [center_y]
+    if isinstance(radius, int):
+        radius = [radius]
     assert len(center_x) == len(center_y) == len(radius), (
         "center_x, center_y, and radius lists must have the same length"
     )
@@ -191,11 +197,11 @@ def _circle(
 @controlled_wrapper(cv2.ellipse, wrapper_attribute="__fnwrapped__")
 def _ellipse(
     img: ImageFormat,
-    center_x: list,
-    center_y: list,
-    axes_x: list,
-    axes_y: list,
-    angle: list,
+    center_x: Union[list, int],
+    center_y: Union[list, int],
+    axes_x: Union[list, int],
+    axes_y: Union[list, int],
+    angle: Union[list, int],
     startAngle: int = 0,
     endAngle: int = 360,
     color: Optional[str] = "00FF00",
@@ -203,6 +209,17 @@ def _ellipse(
     lineType: LineTypes = LineTypes.LINE_8,
     shift: int = 0,
 ) -> OpenCVImageFormat:
+    if isinstance(center_x, int):
+        center_x = [center_x]
+    if isinstance(center_y, int):
+        center_y = [center_y]
+    if isinstance(axes_x, int):
+        axes_x = [axes_x]
+    if isinstance(axes_y, int):
+        axes_y = [axes_y]
+    if isinstance(angle, int):
+        angle = [angle]
+
     assert len(center_x) == len(center_y) == len(axes_x) == len(axes_y) == len(angle), (
         "center_x, center_y, axes_x, axes_y, and angle lists must have the same length"
     )
