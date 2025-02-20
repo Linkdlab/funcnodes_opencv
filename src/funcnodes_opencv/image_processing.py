@@ -147,17 +147,17 @@ def _drawContours(
 @controlled_wrapper(cv2.circle, wrapper_attribute="__fnwrapped__")
 def _circle(
     img: ImageFormat,
-    center_x: Union[list, int],
-    center_y: Union[list, int],
+    center_x: Union[list, float],
+    center_y: Union[list, float],
     radius: Union[list, float],
     color: Optional[str] = "00FF00",
     thickness: int = 1,
     lineType: LineTypes = LineTypes.LINE_8,
     shift: int = 0,
 ) -> OpenCVImageFormat:
-    if isinstance(center_x, int):
+    if isinstance(center_x, float):
         center_x = [center_x]
-    if isinstance(center_y, int):
+    if isinstance(center_y, float):
         center_y = [center_y]
     if isinstance(radius, float):
         radius = [radius]
@@ -170,7 +170,7 @@ def _circle(
     lineType = LineTypes.v(lineType)
     for i in range(len(center_x)):
         cent = (int(center_x[i]), int(center_y[i]))
-        rad = radius[i]
+        rad = int(radius[i])
         return OpenCVImageFormat(
             cv2.circle(
                 img=assert_opencvdata(img, 3),
@@ -197,10 +197,10 @@ def _circle(
 @controlled_wrapper(cv2.ellipse, wrapper_attribute="__fnwrapped__")
 def _ellipse(
     img: ImageFormat,
-    center_x: Union[list, int],
-    center_y: Union[list, int],
-    axes_x: Union[list, int],
-    axes_y: Union[list, int],
+    center_x: Union[list, float],
+    center_y: Union[list, float],
+    axes_x: Union[list, float],
+    axes_y: Union[list, float],
     angle: Union[list, float],
     startAngle: int = 0,
     endAngle: int = 360,
@@ -209,13 +209,13 @@ def _ellipse(
     lineType: LineTypes = LineTypes.LINE_8,
     shift: int = 0,
 ) -> OpenCVImageFormat:
-    if isinstance(center_x, int):
+    if isinstance(center_x, float):
         center_x = [center_x]
-    if isinstance(center_y, int):
+    if isinstance(center_y, float):
         center_y = [center_y]
-    if isinstance(axes_x, int):
+    if isinstance(axes_x, float):
         axes_x = [axes_x]
-    if isinstance(axes_y, int):
+    if isinstance(axes_y, float):
         axes_y = [axes_y]
     if isinstance(angle, float):
         angle = [angle]
@@ -230,7 +230,7 @@ def _ellipse(
     for i in range(len(center_x)):
         center = (int(center_x[i]), int(center_y[i]))
         axes = (int(axes_x[i]), int(axes_y[i]))
-        ang = angle[i]
+        ang = int(angle[i])
         return OpenCVImageFormat(
             cv2.ellipse(
                 img=assert_opencvdata(img, 3),
