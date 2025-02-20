@@ -1,6 +1,6 @@
 [project]
 name = "funcnodes-opencv"
-version = "0.2.7"
+version = "0.2.8"
 description = ""
 readme = "README.md"
 dependencies = [
