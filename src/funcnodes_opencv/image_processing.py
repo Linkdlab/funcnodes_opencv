@@ -168,21 +168,21 @@ def _circle(
 
     color = color[::-1]
     lineType = LineTypes.v(lineType)
+    img = assert_opencvdata(img, 3)
+
     for i in range(len(center_x)):
         cent = (int(center_x[i]), int(center_y[i]))
         rad = int(radius[i])
-        OpenCVImageFormat(
-            cv2.circle(
-                img=assert_opencvdata(img, 3),
-                center=cent,
-                radius=rad,
-                color=color,
-                thickness=thickness,
-                lineType=lineType,
-                shift=int(shift),
-            )
+        img = cv2.circle(
+            img=img,
+            center=cent,
+            radius=rad,
+            color=color,
+            thickness=thickness,
+            lineType=lineType,
+            shift=int(shift),
         )
-    return img
+    return OpenCVImageFormat(img)
 
 
 @fn.NodeDecorator(

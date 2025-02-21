@@ -9,13 +9,14 @@ from funcnodes_opencv.image_processing import (
 import cv2
 import funcnodes_opencv as fnocv
 from funcnodes_opencv.imageformat import OpenCVImageFormat
-
+from funcnodes_core.testing import setup
 # from funcnodes_files import FileUpload
 # import base64
 
 
 class TestImageProcessing(unittest.IsolatedAsyncioTestCase):
     def setUp(self) -> None:
+        setup()
         self.image = cv2.resize(cv2.imread("tests/astronaut.jpg"), None, fx=0.5, fy=0.5)
         self.image[self.image.sum(axis=2) == 0] = [1, 1, 1]
         if self.image.shape[0] % 2 != 0:
