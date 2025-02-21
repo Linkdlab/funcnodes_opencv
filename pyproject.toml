@@ -1,14 +1,14 @@
 [project]
 name = "funcnodes-opencv"
-version = "0.2.11"
+version = "0.2.12"
 description = ""
 readme = "README.md"
 dependencies = [
- "funcnodes_images",
- "opencv-python-headless>=4.9; sys_platform != 'emscripten'",
- "opencv-python; sys_platform == 'emscripten'",
- "funcnodes",
- "funcnodes-numpy",
+    "funcnodes_images",
+    "opencv-python-headless>=4.9; sys_platform != 'emscripten'",
+    "opencv-python; sys_platform == 'emscripten'",
+    "funcnodes",
+    "funcnodes-numpy",
 ]
 requires-python = ">=3.11"
 classifiers = [
@@ -17,21 +17,17 @@ classifiers = [
     "Intended Audience :: Education",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
-    ]
+]
 
 [[project.authors]]
 name = "Julian Kimmig"
 email = "julian.kimmig@gmx.net"
 
 [dependency-groups]
-dev = [
- "pre-commit",
- "pytest",
- "funcnodes-module",
-]
+dev = ["pre-commit", "pytest", "funcnodes-module"]
 
 [build-system]
-requires = [ "setuptools>=42",]
+requires = ["setuptools>=42"]
 build-backend = "setuptools.build_meta"
 
 [project.license]
@@ -57,7 +53,7 @@ module = "funcnodes_opencv"
 shelf = "funcnodes_opencv:NODE_SHELF"
 
 [tool.setuptools.packages.find]
-where = [ "src",]
+where = ["src"]
 
 [tool.poetry.plugins."funcnodes.module"]
 module = "funcnodes_opencv"

@@ -227,26 +227,24 @@ def _ellipse(
     color = rgb_from_hexstring(color)
     color = color[::-1]
     lineType = LineTypes.v(lineType)
-
+    img = assert_opencvdata(img, 3)
     for i in range(len(center_x)):
         center = (int(center_x[i]), int(center_y[i]))
         axes = (int(axes_x[i]), int(axes_y[i]))
         ang = int(angle[i])
-        OpenCVImageFormat(
-            cv2.ellipse(
-                img=assert_opencvdata(img, 3),
-                center=center,
-                axes=axes,
-                angle=ang,
-                startAngle=startAngle,
-                endAngle=endAngle,
-                color=color,
-                thickness=thickness,
-                lineType=lineType,
-                shift=int(shift),
-            )
+        cv2.ellipse(
+            img=img,
+            center=center,
+            axes=axes,
+            angle=ang,
+            startAngle=startAngle,
+            endAngle=endAngle,
+            color=color,
+            thickness=thickness,
+            lineType=lineType,
+            shift=int(shift),
         )
-    return img
+    return OpenCVImageFormat(img)
 
 
 Drawing_Functions_NODE_SHELF = fn.Shelf(
