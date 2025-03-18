@@ -195,7 +195,7 @@ def watershed(
     default_render_options={"data": {"src": "out"}},
 )
 def in_range_singel_channel(
-    img: ImageFormat, lower: int, upper: int
+    img: ImageFormat, lower: int = 0, upper: int = 255
 ) -> OpenCVImageFormat:
     return OpenCVImageFormat(
         cv2.inRange(
@@ -227,7 +227,7 @@ def in_range(
     upper_c3: int = 255,
 ) -> OpenCVImageFormat:
     data = assert_opencvdata(img)
-    if data.shape[2] == 1:
+    if data.ndim == 2:
         arr = cv2.inRange(data, np.array([lower_c1]), np.array([upper_c1]))
     else:
         arr = cv2.inRange(
