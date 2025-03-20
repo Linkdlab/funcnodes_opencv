@@ -114,14 +114,14 @@ def ellipse(
     color = rgb_from_hexstring(color)
     color = color[::-1]
     lineType = LineTypes.v(lineType)
-
+    img = assert_opencvdata(img, 3)
     for i in range(len(center_x)):
         center = (int(center_x[i]), int(center_y[i]))
         axes = (int(axes_x[i]), int(axes_y[i]))
         ang = int(angle[i])
         OpenCVImageFormat(
             cv2.ellipse(
-                img=assert_opencvdata(img, 3),
+                img=img,
                 center=center,
                 axes=axes,
                 angle=ang,
@@ -173,12 +173,12 @@ def line(
     color = rgb_from_hexstring(color)
     color = color[::-1]
     lineType = LineTypes.v(lineType)
-
+    img = assert_opencvdata(img, 3)
     for i in range(len(start_x)):
         start = (int(start_x[i]), int(start_y[i]))
         end = (int(end_x[i]), int(end_y[i]))
         img = cv2.line(
-            img=assert_opencvdata(img, 3),
+            img=img,
             pt1=start,
             pt2=end,
             color=color,
@@ -226,12 +226,12 @@ def rectangle(
     color = rgb_from_hexstring(color)
     color = color[::-1]
     lineType = LineTypes.v(lineType)
-
+    img = assert_opencvdata(img, 3)
     for i in range(len(x)):
         start = (int(x[i]), int(y[i]))
         end = (int(x[i] + width[i]), int(y[i] + height[i]))
         img = cv2.rectangle(
-            img=assert_opencvdata(img, 3),
+            img=img,
             pt1=start,
             pt2=end,
             color=color,
@@ -368,11 +368,11 @@ def putText(
     color = rgb_from_hexstring(color)
     color = color[::-1]
     lineType = LineTypes.v(lineType)
-
+    img = assert_opencvdata(img, 3)
     for i in range(len(org_x)):
         org = (int(org_x[i]), int(org_y[i]))
         img = cv2.putText(
-            img=assert_opencvdata(img, 3),
+            img=img,
             text=text,
             org=org,
             fontFace=FontTypes.v(fontFace),
@@ -423,12 +423,12 @@ def arrowedLine(
     color = rgb_from_hexstring(color)
     color = color[::-1]
     lineType = LineTypes.v(lineType)
-
+    img = assert_opencvdata(img, 3)
     for i in range(len(start_x)):
         start = (int(start_x[i]), int(start_y[i]))
         end = (int(end_x[i]), int(end_y[i]))
         img = cv2.arrowedLine(
-            img=assert_opencvdata(img, 3),
+            img=img,
             pt1=start,
             pt2=end,
             color=color,
@@ -521,11 +521,11 @@ def drawMarker(
         pos_y = [pos_y]
     assert len(pos_x) == len(pos_y), "pos_x and pos_y lists must have the same length"
 
+    img = assert_opencvdata(img, 3)
     for i in range(len(pos_x)):
         position = (int(pos_x[i]), int(pos_y[i]))
-
         img = cv2.drawMarker(
-            img=assert_opencvdata(img, 3),
+            img=img,
             position=position,
             color=color,
             markerType=markerType,

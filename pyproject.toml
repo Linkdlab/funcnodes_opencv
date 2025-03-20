@@ -18,7 +18,7 @@ classifiers = [
     "Intended Audience :: Education",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
-    ]
+]
 
 [[project.authors]]
 name = "Julian Kimmig"
@@ -33,7 +33,7 @@ dev = [
 ]
 
 [build-system]
-requires = [ "setuptools>=42",]
+requires = ["setuptools>=42"]
 build-backend = "setuptools.build_meta"
 
 [project.license]
@@ -59,7 +59,7 @@ module = "funcnodes_opencv"
 shelf = "funcnodes_opencv:NODE_SHELF"
 
 [tool.setuptools.packages.find]
-where = [ "src",]
+where = ["src"]
 
 [tool.poetry.plugins."funcnodes.module"]
 module = "funcnodes_opencv"
