@@ -4,11 +4,12 @@ version = "0.2.12"
 description = ""
 readme = "README.md"
 dependencies = [
-    "funcnodes_images",
-    "opencv-python-headless>=4.9; sys_platform != 'emscripten'",
-    "opencv-python; sys_platform == 'emscripten'",
-    "funcnodes",
-    "funcnodes-numpy",
+ "funcnodes_images",
+ "opencv-python-headless>=4.9; sys_platform != 'emscripten'",
+ "opencv-python; sys_platform == 'emscripten'",
+ "funcnodes",
+ "funcnodes-numpy",
+ "funcnodes-core>=0.3.49",
 ]
 requires-python = ">=3.11"
 classifiers = [
@@ -24,7 +25,12 @@ name = "Julian Kimmig"
 email = "julian.kimmig@gmx.net"
 
 [dependency-groups]
-dev = ["pre-commit", "pytest", "funcnodes-module"]
+dev = [
+ "pre-commit",
+ "pytest",
+ "funcnodes-module",
+ "pytest-funcnodes>=0.1.0",
+]
 
 [build-system]
 requires = ["setuptools>=42"]
