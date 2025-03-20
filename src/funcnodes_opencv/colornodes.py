@@ -5,7 +5,7 @@ from .utils import assert_opencvimg
 
 class ColorCodes(fn.DataEnum):
     GRAY = "GRAY"
-    BRG = "BGR"
+    BGR = "BGR"
     RGB = "RGB"
     HSV = "HSV"
     LAB = "LAB"
@@ -34,7 +34,7 @@ def color_convert(
 
 
 NODE_SHELF = fn.Shelf(
-    name="Color Modes",
+    name="Color Nodes",
     nodes=[
         color_convert,
     ],

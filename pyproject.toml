@@ -1,6 +1,6 @@
 [project]
 name = "funcnodes-opencv"
-version = "0.2.11"
+version = "0.2.12"
 description = ""
 readme = "README.md"
 dependencies = [
@@ -9,6 +9,7 @@ dependencies = [
  "opencv-python; sys_platform == 'emscripten'",
  "funcnodes",
  "funcnodes-numpy",
+ "funcnodes-core>=0.3.49",
 ]
 requires-python = ">=3.11"
 classifiers = [
@@ -28,6 +29,7 @@ dev = [
  "pre-commit",
  "pytest",
  "funcnodes-module",
+ "pytest-funcnodes>=0.1.0",
 ]
 
 [build-system]
