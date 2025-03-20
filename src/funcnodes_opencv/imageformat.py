@@ -22,6 +22,8 @@ class OpenCVImageFormat(NumpyImageFormat):
 
         if arr.ndim == 2:
             colorspace = "GRAY"
+        if arr.ndim == 4:
+            arr = arr[..., :3]
 
         if colorspace != "BGR":
             arr = _conv_colorspace(arr, colorspace, "BGR")
@@ -68,11 +70,11 @@ register_imageformat(OpenCVImageFormat, "cv2")
 
 
 def cv2_to_np(cv2_img: OpenCVImageFormat) -> NumpyImageFormat:
-    return NumpyImageFormat(_conv_colorspace(cv2_img.data, "BGR", "RGB"))
+    return NumpyImageFormat(cv2_img.data)
 
 
 def np_to_cv2(np_img: NumpyImageFormat) -> OpenCVImageFormat:
-    return OpenCVImageFormat(np_img.to_rgb_uint8(), colorspace="RGB")
+    return OpenCVImageFormat(np_img.to_uint8(), colorspace="RGB")
 
 
 OpenCVImageFormat.add_to_converter(NumpyImageFormat, cv2_to_np)
