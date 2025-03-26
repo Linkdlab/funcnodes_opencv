@@ -30,9 +30,6 @@ class OpenCVImageFormat(NumpyImageFormat):
 
         super().__init__(arr)
 
-    def get_data_copy(self) -> np.ndarray:
-        return self._data.copy()
-
     def to_colorspace(self, colorspace: str) -> np.ndarray:
         return _conv_colorspace(self.data, "BGR", colorspace)
 
@@ -42,15 +39,7 @@ class OpenCVImageFormat(NumpyImageFormat):
         )[1].tobytes()
 
     def to_thumbnail(self, size: tuple) -> "OpenCVImageFormat":
-        cur_y, cur_x = self.data.shape[:2]
-        ratio = min(size[0] / cur_x, size[1] / cur_y)
-        new_x, new_y = int(cur_x * ratio), int(cur_y * ratio)
-        return OpenCVImageFormat(
-            cv2.resize(
-                self._data,
-                (new_x, new_y),
-            )
-        )
+        return self.resize(*size)
 
     def resize(
         self,
