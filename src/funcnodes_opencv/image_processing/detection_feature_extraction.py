@@ -55,12 +55,11 @@ def HoughLines(
             min_theta=min_theta_rad,
             max_theta=max_theta_rad,
         )
-    )
-    print("AAA", res.shape)
-    d = res[:, 0, 0]
-    ang = res[:, 0, 1]
-    if res.shape[2] == 3:
-        votes = res[:, 0, 2]
+    )[:, 0, :]
+    d = res[:, 0]
+    ang = res[:, 1]
+    if res.shape[1] == 3:
+        votes = res[:, 2]
     else:
         votes = np.ones(res.shape[0])
     return d, ang, votes, res
@@ -106,7 +105,7 @@ def HoughLinesP(
             minLineLength=min_line_length,
             maxLineGap=max_line_gap,
         )
-    )
+    )[:, 0, :]
     x1y1 = res[:, :2]
     x2y2 = res[:, 2:]
     return res, x1y1, x2y2
