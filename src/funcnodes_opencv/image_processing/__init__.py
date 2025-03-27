@@ -4,6 +4,9 @@ from .geometric_transformations import NODE_SHELF as GEOMETRIC_TRANSFORMATIONS_S
 from .thresholding import NODE_SHELF as THRESHOLDING_SHELF
 from .morphological_operations import NODE_SHELF as MORPHOLOGICAL_OPERATIONS_SHELF
 from .edge_gradient import NODE_SHELF as EDGE_GRADIENT_SHELF
+from .detection_feature_extraction import (
+    NODE_SHELF as DETECTION_FEATURE_EXTRACTION_SHELF,
+)
 
 NODE_SHELF = fn.Shelf(
     nodes=[],
@@ -13,6 +16,7 @@ NODE_SHELF = fn.Shelf(
         THRESHOLDING_SHELF,
         MORPHOLOGICAL_OPERATIONS_SHELF,
         EDGE_GRADIENT_SHELF,
+        DETECTION_FEATURE_EXTRACTION_SHELF,
     ],
     name="Image Processing",
     description="Image processing operations.",
