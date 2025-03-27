@@ -29,7 +29,7 @@ async def test_HoughLines(image):
 
     dlines = np.array(
         cv2.HoughLines(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), 10, np.pi / 180, 200)
-    )
+    )[:, 0, :]
 
     np.testing.assert_array_equal(lines, dlines)
 
@@ -40,9 +40,17 @@ async def test_HoughLinesP(image):
 
     dlines = np.array(
         cv2.HoughLinesP(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), 10, np.pi / 180, 200)
-    )
+    )[:, 0, :]
 
     np.testing.assert_array_equal(x1y1x2y2, dlines)
+    # print(x1y1x2y2.shape)
+    # display_image = image.copy()
+    # for x1, y1, x2, y2 in x1y1x2y2:
+    #     cv2.line(display_image, (x1, y1), (x2, y2), (0, 255, 0), 1)
+
+    # cv2.imshow("Image", display_image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
 
 @pytest_funcnodes.nodetest(HoughCircles)

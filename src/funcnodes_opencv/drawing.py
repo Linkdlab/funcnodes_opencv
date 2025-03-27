@@ -54,6 +54,8 @@ def circle(
         center_x = np.atleast_2d(center_x).T
 
         if radius is None:
+            if center_x.shape[1] != 3 and center_x.shape[0] == 3:
+                center_x = center_x.T
             if center_x.shape[1] != 3:
                 raise ValueError(
                     "if center_y and radius is not provided, center_x must be a list of 3 elements (x, y, r)"
@@ -63,6 +65,8 @@ def circle(
             radius = center_x[:, 2]
             center_x = center_x[:, 0]
         else:
+            if center_x.shape[1] != 2 and center_x.shape[0] == 2:
+                center_x = center_x.T
             if center_x.shape[1] != 2:
                 raise ValueError(
                     "if center_y is not provided, center_x must be a list of at least 2 elements (x, y)"
@@ -200,9 +204,11 @@ def line(
     if end_x is None:
         # this means x1, y1, x2, y2 are passed as a single list
         start_x = np.atleast_2d(start_x).T
+        if start_x.shape[1] != 4 and start_x.shape[0] == 4:
+            start_x = start_x.T
         if start_x.shape[1] != 4:
             raise ValueError(
-                "if end_x is not provided, start_x must be a list of 4 elements (x1, y1, x2, y2)"
+                f"if end_x is not provided, start_x must be a list of 4 elements (x1, y1, x2, y2), got {start_x.shape}"
             )
 
         start_y = start_x[:, 1]
@@ -215,9 +221,15 @@ def line(
         if start_y is None and end_y is None:
             # start_x and end_x are (x1,y1), (x2, y2) pairs
             start_x = np.atleast_2d(start_x).T
+            if start_x.shape[1] != 2 and start_x.shape[0] == 2:
+                start_x = start_x.T
+            if end_x.shape[1] != 2 and end_x.shape[0] == 2:
+                end_x = end_x.T
+
             if start_x.shape[1] != 2 or end_x.shape[1] != 2:
                 raise ValueError(
-                    "if end_x is provided and ys are not, start_x and end-x must be a list of 2 elements (x, y)"
+                    "if end_x is provided and ys are not, start_x and end-x must be a list of 2 elements (x, y). "
+                    f"got {start_x.shape}, {end_x.shape}"
                 )
             start_y = start_x[:, 1]
             start_x = start_x[:, 0]
