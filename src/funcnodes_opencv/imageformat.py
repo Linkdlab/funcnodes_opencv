@@ -22,7 +22,7 @@ class OpenCVImageFormat(NumpyImageFormat):
 
         if arr.ndim == 2:
             colorspace = "GRAY"
-        if arr.ndim == 4:
+        if arr.ndim == 4:  # drop alpha channel
             arr = arr[..., :3]
 
         if colorspace != "BGR":
