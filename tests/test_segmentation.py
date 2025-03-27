@@ -9,6 +9,7 @@ from funcnodes_opencv.segmentation import (
     DistanceTypes,
     distance_transform,
     watershed,
+    connectedComponents,
 )
 
 
@@ -67,3 +68,20 @@ async def test_watershed(image1):
             cv2.connectedComponents(cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY))[1],
         ),
     )
+
+
+@pytest_funcnodes.nodetest(connectedComponents)
+async def test_connectedComponents(image1):
+    r = get_image_data(
+        await connectedComponents.inti_call(
+            img=image1,
+            connectivity=8,
+        )
+    )
+    e = cv2.connectedComponents(
+        cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY),
+        connectivity=8,
+    )
+    assert len(r) == len(e)
+    for i in range(len(r)):
+        np.testing.assert_array_equal(r[i], e[i])

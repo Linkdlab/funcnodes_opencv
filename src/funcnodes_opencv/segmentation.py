@@ -5,7 +5,7 @@ import funcnodes as fn
 import cv2
 import numpy as np
 from .imageformat import ImageFormat, NumpyImageFormat
-from .utils import normalize, assert_opencvdata
+from .utils import assert_opencvdata
 
 
 class RetrievalModes(fn.DataEnum):
@@ -132,8 +132,7 @@ def connectedComponents(
 ) -> Tuple[int, np.ndarray]:
     connectivity = int(connectivity)
     data = assert_opencvdata(img, 1)
-    img = normalize(data)
-    retval, labels = cv2.connectedComponents(img, connectivity=connectivity)
+    retval, labels = cv2.connectedComponents(data, connectivity=connectivity)
     return retval, labels
 
 
@@ -154,7 +153,7 @@ def watershed(
 
 NODE_SHELF = fn.Shelf(
     name="Segmentation & Contour Analysis",
-    nodes=[findContours, distance_transform, watershed],
+    nodes=[findContours, distance_transform, connectedComponents, watershed],
     subshelves=[],
     description="Segmentation and contour analysis nodes.",
 )

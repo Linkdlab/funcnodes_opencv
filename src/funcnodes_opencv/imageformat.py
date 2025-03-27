@@ -22,16 +22,13 @@ class OpenCVImageFormat(NumpyImageFormat):
 
         if arr.ndim == 2:
             colorspace = "GRAY"
-        if arr.ndim == 4:
+        if arr.ndim == 4:  # drop alpha channel
             arr = arr[..., :3]
 
         if colorspace != "BGR":
             arr = _conv_colorspace(arr, colorspace, "BGR")
 
         super().__init__(arr)
-
-    def get_data_copy(self) -> np.ndarray:
-        return self._data.copy()
 
     def to_colorspace(self, colorspace: str) -> np.ndarray:
         return _conv_colorspace(self.data, "BGR", colorspace)
@@ -42,15 +39,7 @@ class OpenCVImageFormat(NumpyImageFormat):
         )[1].tobytes()
 
     def to_thumbnail(self, size: tuple) -> "OpenCVImageFormat":
-        cur_y, cur_x = self.data.shape[:2]
-        ratio = min(size[0] / cur_x, size[1] / cur_y)
-        new_x, new_y = int(cur_x * ratio), int(cur_y * ratio)
-        return OpenCVImageFormat(
-            cv2.resize(
-                self._data,
-                (new_x, new_y),
-            )
-        )
+        return self.resize(*size)
 
     def resize(
         self,
