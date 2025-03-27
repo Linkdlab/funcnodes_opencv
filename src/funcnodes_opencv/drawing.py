@@ -624,6 +624,7 @@ def labels_to_color(
         mix: bool, if True, mix the numerical values of the labels to prevent a spread of colors.
     """
 
+    labels = np.array(labels)
     if labels.ndim != 2:
         raise ValueError("labels must be a 2D array")
     unique_labels = np.unique(labels)
