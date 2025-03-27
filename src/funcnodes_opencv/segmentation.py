@@ -154,7 +154,7 @@ def watershed(
 
 NODE_SHELF = fn.Shelf(
     name="Segmentation & Contour Analysis",
-    nodes=[findContours, distance_transform, watershed],
+    nodes=[findContours, distance_transform, connectedComponents, watershed],
     subshelves=[],
     description="Segmentation and contour analysis nodes.",
 )
