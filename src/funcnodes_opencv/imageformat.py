@@ -39,14 +39,17 @@ class OpenCVImageFormat(NumpyImageFormat):
         )[1].tobytes()
 
     def to_thumbnail(self, size: tuple) -> "OpenCVImageFormat":
-        return self.resize(*size)
+        return self.resize(*size, keep_ratio=True)
 
     def resize(
         self,
         w: int = None,
         h: int = None,
-    ) -> "OpenCVImageFormat":
-        new_x, new_y = calc_new_size(*self.data.shape[:2], w, h)
+        keep_ratio: bool = True,
+    ) -> "OpenCVImageFormat":  #
+        new_x, new_y = calc_new_size(
+            self.width(), self.height(), w, h, keep_ratio=keep_ratio
+        )
         return OpenCVImageFormat(
             cv2.resize(
                 self.data,
