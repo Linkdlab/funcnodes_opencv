@@ -1,6 +1,6 @@
 [project]
 name = "funcnodes-opencv"
-version = "0.2.16"
+version = "0.2.17"
 description = ""
 readme = "README.md"
 dependencies = [
@@ -30,6 +30,7 @@ dev = [
  "pytest",
  "funcnodes-module",
  "pytest-funcnodes>=0.1.0",
+ "opencv-python",
 ]
 
 [build-system]

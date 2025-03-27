@@ -34,8 +34,8 @@ class LineTypes(fn.DataEnum):
 def circle(
     img: ImageFormat,
     center_x: Union[float, List[float], int, List[int]],
-    center_y: Union[float, List[float], int, List[int]],
-    radius: Union[float, List[float], int, List[int]],
+    center_y: Union[float, List[float], int, List[int]] = None,
+    radius: Union[float, List[float], int, List[int]] = None,
     color: Optional[str] = "00FF00",
     thickness: int = 1,
     lineType: LineTypes = LineTypes.LINE_8,
@@ -47,6 +47,33 @@ def circle(
         center_y = [center_y]
     if isinstance(radius, (float, int)):
         radius = [radius]
+
+    center_x = np.array(center_x)
+    if center_y is None:
+        # this means x, y, r are passed as a single list
+        center_x = np.atleast_2d(center_x).T
+
+        if radius is None:
+            if center_x.shape[1] != 3:
+                raise ValueError(
+                    "if center_y and radius is not provided, center_x must be a list of 3 elements (x, y, r)"
+                )
+
+            center_y = center_x[:, 1]
+            radius = center_x[:, 2]
+            center_x = center_x[:, 0]
+        else:
+            if center_x.shape[1] != 2:
+                raise ValueError(
+                    "if center_y is not provided, center_x must be a list of at least 2 elements (x, y)"
+                )
+
+            center_y = center_x[:, 1]
+            center_x = center_x[:, 0]
+
+    center_y = np.array(center_y)
+    radius = np.array(radius)
+
     assert len(center_x) == len(center_y) == len(radius), (
         "center_x, center_y, and radius lists must have the same length"
     )
@@ -151,9 +178,9 @@ def ellipse(
 def line(
     img: ImageFormat,
     start_x: Union[float, List[float], int, List[int]],
-    start_y: Union[float, List[float], int, List[int]],
-    end_x: Union[float, List[float], int, List[int]],
-    end_y: Union[float, List[float], int, List[int]],
+    start_y: Union[float, List[float], int, List[int]] = None,
+    end_x: Union[float, List[float], int, List[int]] = None,
+    end_y: Union[float, List[float], int, List[int]] = None,
     color: Optional[str] = "00FF00",
     thickness: int = 1,
     lineType: LineTypes = LineTypes.LINE_8,
@@ -167,6 +194,47 @@ def line(
         end_x = [end_x]
     if isinstance(end_y, (float, int)):
         end_y = [end_y]
+
+    start_x = np.array(start_x)
+
+    if end_x is None:
+        # this means x1, y1, x2, y2 are passed as a single list
+        start_x = np.atleast_2d(start_x).T
+        if start_x.shape[1] != 4:
+            raise ValueError(
+                "if end_x is not provided, start_x must be a list of 4 elements (x1, y1, x2, y2)"
+            )
+
+        start_y = start_x[:, 1]
+        end_x = start_x[:, 2]
+        end_y = start_x[:, 3]
+        start_x = start_x[:, 0]
+
+    else:
+        # end_x is provided
+        if start_y is None and end_y is None:
+            # start_x and end_x are (x1,y1), (x2, y2) pairs
+            start_x = np.atleast_2d(start_x).T
+            if start_x.shape[1] != 2 or end_x.shape[1] != 2:
+                raise ValueError(
+                    "if end_x is provided and ys are not, start_x and end-x must be a list of 2 elements (x, y)"
+                )
+            start_y = start_x[:, 1]
+            start_x = start_x[:, 0]
+            end_y = end_x[:, 1]
+            end_x = end_x[:, 0]
+
+    if start_y is None or end_y is None or end_x is None:
+        raise ValueError(
+            "error parsing inputs, valid combinations are: \n"
+            "start_x:[(x1,y1,x2,y2)]\n"
+            "start_x:[(x1,y1)], end_x:[(x2,y2)]\n"
+            "start_x:[x1], start_y:[y1], end_x:[x2], end_y:[y2]"
+        )
+
+    start_y = np.array(start_y)
+    end_x = np.array(end_x)
+    end_y = np.array(end_y)
     assert len(start_x) == len(start_y) == len(end_x) == len(end_y), (
         "start_x, start_y, end_x, and end_y lists must have the same length"
     )
