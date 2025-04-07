@@ -4,7 +4,7 @@ import numpy as np
 import funcnodes as fn
 import math
 from ..imageformat import OpenCVImageFormat, ImageFormat
-from ..utils import assert_opencvdata, assert_opencvimg
+from ..utils import assert_opencvdata
 
 
 class Interpolations(fn.DataEnum):
@@ -97,15 +97,18 @@ def resize(
     interpolation: Interpolations = Interpolations.LINEAR,
 ) -> OpenCVImageFormat:
     interpolation: int = Interpolations.v(interpolation)
-    img = assert_opencvimg(img)
+    data = assert_opencvdata(img)
     if h is None:
-        h = int(round(fh * img.height()))
-
+        h = int(round(fh * data.shape[0]))
+    if h == 0:
+        h = 1
     if w is None:
-        w = int(round(fw * img.width()))
+        w = int(round(fw * data.shape[1]))
+    if w == 0:
+        w = 1
 
     return OpenCVImageFormat(
-        cv2.resize(img.data, dsize=(w, h), interpolation=interpolation)
+        cv2.resize(data, dsize=(w, h), interpolation=interpolation)
     )
 
 
@@ -116,11 +119,11 @@ def resize(
 def warpAffine(
     img: ImageFormat, M: np.ndarray, w: Optional[int] = None, h: Optional[int] = None
 ) -> OpenCVImageFormat:
-    img = assert_opencvimg(img)
+    data = assert_opencvdata(img)
     if w is None:
-        w = img.width()
+        w = data.shape[1]
     if h is None:
-        h = img.height()
+        h = data.shape[0]
     return OpenCVImageFormat(cv2.warpAffine(assert_opencvdata(img), M, (w, h)))
 
 
@@ -131,11 +134,11 @@ def warpAffine(
 def perpectiveTransform(
     img: ImageFormat, M: np.ndarray, w: Optional[int] = None, h: Optional[int] = None
 ) -> OpenCVImageFormat:
-    img = assert_opencvimg(img)
+    data = assert_opencvdata(img)
     if w is None:
-        w = img.width()
+        w = data.shape[1]
     if h is None:
-        h = img.height()
+        h = data.shape[0]
     return OpenCVImageFormat(cv2.warpPerspective(assert_opencvdata(img), M, (w, h)))
 
 
@@ -160,7 +163,7 @@ class FreeRotationCropMode(fn.DataEnum):
         {"name": "M", "description": "The transformation matrix."},
     ],
     default_render_options={"data": {"src": "out"}},
-    default_io_options={"angle": {"value_options": {"min": 0, "max": 360}}},
+    default_io_options={"angle": {"value_options": {"min": 0.0, "max": 360.0}}},
 )
 def freeRotation(
     img: ImageFormat,

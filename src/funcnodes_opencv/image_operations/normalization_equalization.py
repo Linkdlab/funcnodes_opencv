@@ -39,7 +39,7 @@ def normalize(
 def equalizeHist(
     img: ImageFormat,
 ) -> OpenCVImageFormat:
-    data = assert_opencvdata(img, channel=1)
+    data = (assert_opencvdata(img, channel=1) * 255).astype(np.uint8)
     result = cv2.equalizeHist(data)
     return OpenCVImageFormat(result)
 
@@ -54,8 +54,8 @@ def CLAHE(
     img: ImageFormat,
     clip_limit: float = 40.0,
     tile_grid_size: tuple = (8, 8),
-) -> cv2.CLAHE:
-    data = assert_opencvdata(img, channel=1)
+) -> OpenCVImageFormat:
+    data = (assert_opencvdata(img, channel=1) * 65535).astype(np.uint16)
     return OpenCVImageFormat(
         cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=tile_grid_size).apply(data)
     )
