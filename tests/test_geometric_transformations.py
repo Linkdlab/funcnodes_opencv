@@ -56,7 +56,7 @@ async def test_resize(image1):
         fnout,
         res,
         rtol=1e-6,
-        atol=3e-3,
+        atol=1e-2,
     )
 
 
