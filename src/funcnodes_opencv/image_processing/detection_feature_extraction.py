@@ -14,9 +14,9 @@ from ..utils import assert_opencvdata
     default_render_options={"data": {"src": "out"}},
     description="Finds lines in a binary image using the standard Hough transform.",
     default_io_options={
-        "theta": {"value_options": {"min": 0, "max": 180}},
-        "min_theta": {"value_options": {"min": 0, "max": 180}},
-        "max_theta": {"value_options": {"min": 0, "max": 180}},
+        "theta": {"value_options": {"min": 0.0, "max": 180.0}},
+        "min_theta": {"value_options": {"min": 0.0, "max": 180.0}},
+        "max_theta": {"value_options": {"min": 0.0, "max": 180.0}},
     },
     outputs=[
         {
@@ -44,9 +44,10 @@ def HoughLines(
     theta_rad = np.deg2rad(theta)
     max_theta_rad = np.deg2rad(max_theta)
     min_theta_rad = np.deg2rad(min_theta)
+    f = cv2.HoughLinesWithAccumulator if srn != 0 or stn != 0 else cv2.HoughLines
     res = np.array(
-        cv2.HoughLines(
-            assert_opencvdata(img, channel=1),
+        f(
+            (assert_opencvdata(img, channel=1) * 255).astype(np.uint8),
             rho,
             theta_rad,
             threshold,
@@ -55,7 +56,8 @@ def HoughLines(
             min_theta=min_theta_rad,
             max_theta=max_theta_rad,
         )
-    )[:, 0, :]
+    )
+    res = res[:, 0, :]
     d = res[:, 0]
     ang = res[:, 1]
     if res.shape[1] == 3:
@@ -71,7 +73,7 @@ def HoughLines(
     default_render_options={"data": {"src": "out"}},
     description="Finds line segments in a binary image using the probabilistic Hough transform.",
     default_io_options={
-        "theta": {"value_options": {"min": 0, "max": 180}},
+        "theta": {"value_options": {"min": 0.0, "max": 180.0}},
         "min_line_length": {"value_options": {"min": 0}},
         "max_line_gap": {"value_options": {"min": 0}},
     },
@@ -98,7 +100,7 @@ def HoughLinesP(
     theta_rad = np.deg2rad(theta)
     res = np.array(
         cv2.HoughLinesP(
-            assert_opencvdata(img, channel=1),
+            (assert_opencvdata(img, channel=1) * 255).astype(np.uint8),
             rho,
             theta_rad,
             threshold,
@@ -148,7 +150,7 @@ def HoughCircles(
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     res = np.array(
         cv2.HoughCircles(
-            assert_opencvdata(img, channel=1),
+            (assert_opencvdata(img, channel=1) * 255).astype(np.uint8)[:, :, 0],
             cv2.HOUGH_GRADIENT,
             dp,
             minDist=min_dist,

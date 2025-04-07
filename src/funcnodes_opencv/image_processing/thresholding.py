@@ -31,16 +31,16 @@ class ThresholdTypes(fn.DataEnum):
         {"name": "out", "type": OpenCVImageFormat},
     ],
     default_io_options={
-        "maxval": {"value_options": {"min": 0, "max": 255}},
-        "thresh": {"value_options": {"min": 0, "max": 255}},
+        "maxval": {"value_options": {"min": 0.0, "max": 1.0}},
+        "thresh": {"value_options": {"min": 0.0, "max": 1.0}},
     },
     default_render_options={"data": {"src": "out"}},
     description="Apply a fixed-level threshold to an image.",
 )
 def threshold(
     img: ImageFormat,
-    thresh: int = 0,
-    maxval: int = 255,
+    thresh: float = 0,
+    maxval: float = 1.0,
     type: ThresholdTypes = ThresholdTypes.BINARY,
 ) -> OpenCVImageFormat:
     return OpenCVImageFormat(
@@ -64,17 +64,27 @@ class AutoThresholdTypes(fn.DataEnum):
         {"name": "out", "type": OpenCVImageFormat},
         {"name": "thresh", "type": int},
     ],
-    default_io_options={"maxval": {"value_options": {"min": 0, "max": 255}}},
+    default_io_options={"maxval": {"value_options": {"min": 0.0, "max": 1.0}}},
     default_render_options={"data": {"src": "out"}},
     description="Apply an automatic threshold to an image.",
 )
 def auto_threshold(
     img: ImageFormat,
-    maxval: int = 255,
+    maxval: float = 1,
     type: AutoThresholdTypes = AutoThresholdTypes.OTSU,
 ) -> Tuple[OpenCVImageFormat, int]:
     type = AutoThresholdTypes.v(type)
-    thresh, img = cv2.threshold(assert_opencvdata(img, 1), 0, maxval, type)
+
+    img = assert_opencvdata(img, 1)
+
+    if type == AutoThresholdTypes.OTSU.value:
+        img = (img * 65535).astype(np.uint16)
+        maxval = int(maxval * 65535)
+    elif type == AutoThresholdTypes.TRIANGLE.value:
+        img = (img * 255).astype(np.uint8)
+        maxval = int(maxval * 255)
+
+    thresh, img = cv2.threshold(img, 0, maxval, type)
     return OpenCVImageFormat(img), thresh
 
 
@@ -98,8 +108,8 @@ class AdaptiveThresholdMethods(fn.DataEnum):
         {"name": "out", "type": OpenCVImageFormat},
     ],
     default_io_options={
-        "maxval": {"value_options": {"min": 0, "max": 255}},
-        "c": {"value_options": {"min": -255, "max": 255}},
+        "maxval": {"value_options": {"min": 0.0, "max": 1.0}},
+        "c": {"value_options": {"min": -1, "max": 1}},
         "block_size": {"value_options": {"min": 1}},
     },
     default_render_options={"data": {"src": "out"}},
@@ -107,21 +117,25 @@ class AdaptiveThresholdMethods(fn.DataEnum):
 )
 def adaptive_threshold(
     img: ImageFormat,
-    maxval: int = 255,
+    maxval: float = 1,
     method: AdaptiveThresholdMethods = AdaptiveThresholdMethods.MEAN_C,
     block_size: int = 1,
-    c: int = 0,
+    c: float = 0,
 ) -> OpenCVImageFormat:
     # threshold_type = ThresholdTypes.v(threshold_type)
     block_size = 2 * int(block_size) + 1
+    img = assert_opencvdata(img, 1)
+    img = (img * 255).astype(np.uint8)
+    maxval = int(maxval * 255)
+
     return OpenCVImageFormat(
         cv2.adaptiveThreshold(
-            assert_opencvdata(img, 1),
+            img,
             maxval,
             AdaptiveThresholdMethods.v(method),
             cv2.THRESH_BINARY,  # fixed because not all types are allowed
             block_size,
-            c,
+            c * 255,
         )
     )
 
@@ -130,17 +144,19 @@ def adaptive_threshold(
     node_id="cv2.in_range_sc",
     node_name=" In Range Single Channel",
     default_io_options={
-        "lower": {"value_options": {"min": 0, "max": 255}},
-        "upper": {"value_options": {"min": 0, "max": 255}},
+        "lower": {"value_options": {"min": 0.0, "max": 1.0}},
+        "upper": {"value_options": {"min": 0.0, "max": 1.0}},
     },
     default_render_options={"data": {"src": "out"}},
 )
 def in_range_singel_channel(
-    img: ImageFormat, lower: int = 0, upper: int = 255
+    img: ImageFormat, lower: float = 0, upper: float = 1
 ) -> OpenCVImageFormat:
     return OpenCVImageFormat(
         cv2.inRange(
-            assert_opencvdata(img, channel=1), np.array([lower]), np.array([upper])
+            assert_opencvdata(img, channel=1),
+            np.array([lower], dtype=np.float32),
+            np.array([upper], dtype=np.float32),
         )
     )
 
@@ -149,32 +165,36 @@ def in_range_singel_channel(
     node_id="cv2.in_range",
     node_name="In Range",
     default_io_options={
-        "lower_c1": {"value_options": {"min": 0, "max": 255}},
-        "upper_c1": {"value_options": {"min": 0, "max": 255}},
-        "lower_c2": {"value_options": {"min": 0, "max": 255}},
-        "upper_c2": {"value_options": {"min": 0, "max": 255}},
-        "lower_c3": {"value_options": {"min": 0, "max": 255}},
-        "upper_c3": {"value_options": {"min": 0, "max": 255}},
+        "lower_c1": {"value_options": {"min": 0.0, "max": 1.0}},
+        "upper_c1": {"value_options": {"min": 0.0, "max": 1.0}},
+        "lower_c2": {"value_options": {"min": 0.0, "max": 1.0}},
+        "upper_c2": {"value_options": {"min": 0.0, "max": 1.0}},
+        "lower_c3": {"value_options": {"min": 0.0, "max": 1.0}},
+        "upper_c3": {"value_options": {"min": 0.0, "max": 1.0}},
     },
     default_render_options={"data": {"src": "out"}},
 )
 def in_range(
     img: ImageFormat,
-    lower_c1: int = 0,
-    upper_c1: int = 255,
-    lower_c2: int = 0,
-    upper_c2: int = 255,
-    lower_c3: int = 0,
-    upper_c3: int = 255,
+    lower_c1: float = 0,
+    upper_c1: float = 1,
+    lower_c2: float = 0,
+    upper_c2: float = 1,
+    lower_c3: float = 0,
+    upper_c3: float = 1,
 ) -> OpenCVImageFormat:
     data = assert_opencvdata(img)
-    if data.ndim == 2:
-        arr = cv2.inRange(data, np.array([lower_c1]), np.array([upper_c1]))
+    if data.shape[2] == 1:
+        arr = cv2.inRange(
+            data,
+            np.array([lower_c1], dtype=np.float32),
+            np.array([upper_c1], dtype=np.float32),
+        )
     else:
         arr = cv2.inRange(
             data,
-            np.array([lower_c1, lower_c2, lower_c3]),
-            np.array([upper_c1, upper_c2, upper_c3]),
+            np.array([lower_c1, lower_c2, lower_c3], dtype=np.float32),
+            np.array([upper_c1, upper_c2, upper_c3], dtype=np.float32),
         )
 
     return OpenCVImageFormat(arr)

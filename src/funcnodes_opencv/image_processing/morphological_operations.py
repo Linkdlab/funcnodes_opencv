@@ -77,16 +77,19 @@ def morphologyEx(
 
     if kernel is not None and isinstance(kernel, (int, float)):
         kernel = np.ones((int(kernel), int(kernel)), np.uint8)
+    if op == cv2.MORPH_HITMISS:
+        data = (assert_opencvdata(img, channel=1) * 255).astype(np.uint8)
+    else:
+        data = assert_opencvdata(img)
 
-    data = assert_opencvdata(img, channel=None if op != cv2.MORPH_HITMISS else 1)
-    return OpenCVImageFormat(
-        cv2.morphologyEx(
-            data,
-            op=op,
-            kernel=kernel,
-            iterations=iterations,
-        )
+    res = cv2.morphologyEx(
+        data,
+        op=op,
+        kernel=kernel,
+        iterations=iterations,
     )
+
+    return OpenCVImageFormat(res)
 
 
 NODE_SHELF = fn.Shelf(

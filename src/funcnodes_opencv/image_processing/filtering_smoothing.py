@@ -74,15 +74,14 @@ def gaussianBlur(
         sigmaY = sigmaX
 
     ksize = (kw, kh)
-    return OpenCVImageFormat(
-        cv2.GaussianBlur(
-            assert_opencvdata(img),
-            ksize,
-            sigmaX=sigmaX,
-            sigmaY=sigmaY,
-            borderType=BorderTypes.v(borderType),
-        )
+    img = cv2.GaussianBlur(
+        assert_opencvdata(img),
+        ksize,
+        sigmaX=sigmaX,
+        sigmaY=sigmaY,
+        borderType=BorderTypes.v(borderType),
     )
+    return OpenCVImageFormat(img)
 
 
 @fn.NodeDecorator(
@@ -96,7 +95,11 @@ def medianBlur(
 ) -> OpenCVImageFormat:
     if ksize % 2 == 0:
         ksize += 1
-    return OpenCVImageFormat(cv2.medianBlur(assert_opencvdata(img), ksize))
+
+    img = assert_opencvdata(img)
+    if ksize > 5:
+        img = (img * 255).astype(np.uint8)
+    return OpenCVImageFormat(cv2.medianBlur(img, ksize))
 
 
 @fn.NodeDecorator(
@@ -107,19 +110,18 @@ def medianBlur(
 def bilateralFilter(
     img: ImageFormat,
     d: int = 9,
-    sigmaColor: float = 75,
-    sigmaSpace: float = 75,
+    sigmaColor: float = 0.25,
+    sigmaSpace: float = 0.25,
     borderType: BorderTypes = BorderTypes.DEFAULT,
 ) -> OpenCVImageFormat:
-    return OpenCVImageFormat(
-        cv2.bilateralFilter(
-            assert_opencvdata(img),
-            d,
-            sigmaColor,
-            sigmaSpace,
-            borderType=BorderTypes.v(borderType),
-        )
+    img = cv2.bilateralFilter(
+        assert_opencvdata(img),
+        d,
+        sigmaColor,
+        sigmaSpace,
+        borderType=BorderTypes.v(borderType),
     )
+    return OpenCVImageFormat(img)
 
 
 @fn.NodeDecorator(
@@ -157,26 +159,26 @@ def boxFilter(
 def filter2D(
     img: ImageFormat,
     kernel: Optional[np.ndarray],
-    ddepth: int = -1,
     anchor: Optional[Tuple[int, int]] = None,
     delta: int = 0,
     borderType: BorderTypes = BorderTypes.DEFAULT,
+    clip: bool = True,
 ) -> OpenCVImageFormat:
     if anchor is None:
         anchor = (-1, -1)
 
     data = assert_opencvdata(img)
-
-    return OpenCVImageFormat(
-        cv2.filter2D(
-            data,
-            ddepth=ddepth,
-            kernel=kernel,
-            anchor=anchor,
-            delta=delta,
-            borderType=BorderTypes.v(borderType),
-        )
+    img = cv2.filter2D(
+        data,
+        -1,
+        kernel=kernel,
+        anchor=anchor,
+        delta=delta,
+        borderType=BorderTypes.v(borderType),
     )
+    if clip:
+        img = np.clip(img, 0, 1)
+    return OpenCVImageFormat(img)
 
 
 @fn.NodeDecorator(

@@ -2,6 +2,7 @@ from typing import Union, Optional, Tuple, List
 import cv2
 import numpy as np
 import funcnodes as fn
+
 from .imageformat import OpenCVImageFormat, ImageFormat
 from .utils import assert_opencvdata
 
@@ -81,9 +82,8 @@ def circle(
     assert len(center_x) == len(center_y) == len(radius), (
         "center_x, center_y, and radius lists must have the same length"
     )
-    color = rgb_from_hexstring(color)
+    color = np.array(rgb_from_hexstring(color))[::-1] / 255.0
 
-    color = color[::-1]
     lineType = LineTypes.v(lineType)
     img = assert_opencvdata(img, 3)
 
@@ -142,29 +142,27 @@ def ellipse(
     assert len(center_x) == len(center_y) == len(axes_x) == len(axes_y) == len(angle), (
         "center_x, center_y, axes_x, axes_y, and angle lists must have the same length"
     )
-    color = rgb_from_hexstring(color)
-    color = color[::-1]
+    color = np.array(rgb_from_hexstring(color))[::-1] / 255.0
+
     lineType = LineTypes.v(lineType)
     img = assert_opencvdata(img, 3)
     for i in range(len(center_x)):
         center = (int(center_x[i]), int(center_y[i]))
         axes = (int(axes_x[i]), int(axes_y[i]))
         ang = int(angle[i])
-        OpenCVImageFormat(
-            cv2.ellipse(
-                img=img,
-                center=center,
-                axes=axes,
-                angle=ang,
-                startAngle=start_angle,
-                endAngle=end_angle,
-                color=color,
-                thickness=thickness,
-                lineType=lineType,
-                shift=int(shift),
-            )
+        img = cv2.ellipse(
+            img=img,
+            center=center,
+            axes=axes,
+            angle=ang,
+            startAngle=start_angle,
+            endAngle=end_angle,
+            color=color,
+            thickness=thickness,
+            lineType=lineType,
+            shift=int(shift),
         )
-    return img
+    return OpenCVImageFormat(img)
 
 
 @fn.NodeDecorator(
@@ -250,8 +248,8 @@ def line(
     assert len(start_x) == len(start_y) == len(end_x) == len(end_y), (
         "start_x, start_y, end_x, and end_y lists must have the same length"
     )
-    color = rgb_from_hexstring(color)
-    color = color[::-1]
+    color = np.array(rgb_from_hexstring(color))[::-1] / 255.0
+
     lineType = LineTypes.v(lineType)
     img = assert_opencvdata(img, 3)
     for i in range(len(start_x)):
@@ -303,8 +301,8 @@ def rectangle(
     assert len(x) == len(y) == len(width) == len(height), (
         "x, y, width, and height lists must have the same length"
     )
-    color = rgb_from_hexstring(color)
-    color = color[::-1]
+    color = np.array(rgb_from_hexstring(color))[::-1] / 255.0
+
     lineType = LineTypes.v(lineType)
     img = assert_opencvdata(img, 3)
     for i in range(len(x)):
@@ -343,8 +341,8 @@ def polylines(
     lineType: LineTypes = LineTypes.LINE_8,
     shift: int = 0,
 ) -> OpenCVImageFormat:
-    color = rgb_from_hexstring(color)
-    color = color[::-1]
+    color = np.array(rgb_from_hexstring(color))[::-1] / 255.0
+
     lineType = LineTypes.v(lineType)
 
     if isinstance(pts, np.ndarray):
@@ -382,8 +380,8 @@ def fillPoly(
     lineType: LineTypes = LineTypes.LINE_8,
     shift: int = 0,
 ) -> OpenCVImageFormat:
-    color = rgb_from_hexstring(color)
-    color = color[::-1]
+    color = np.array(rgb_from_hexstring(color))[::-1] / 255.0
+
     lineType = LineTypes.v(lineType)
 
     if isinstance(pts, np.ndarray):
@@ -445,8 +443,8 @@ def putText(
     if isinstance(org_y, (float, int)):
         org_y = [org_y]
     assert len(org_x) == len(org_y), "org_x and org_y lists must have the same length"
-    color = rgb_from_hexstring(color)
-    color = color[::-1]
+    color = np.array(rgb_from_hexstring(color))[::-1] / 255.0
+
     lineType = LineTypes.v(lineType)
     img = assert_opencvdata(img, 3)
     for i in range(len(org_x)):
@@ -500,8 +498,7 @@ def arrowedLine(
     assert len(start_x) == len(start_y) == len(end_x) == len(end_y), (
         "start_x, start_y, end_x, and end_y lists must have the same length"
     )
-    color = rgb_from_hexstring(color)
-    color = color[::-1]
+    color = np.array(rgb_from_hexstring(color))[::-1] / 255.0
     lineType = LineTypes.v(lineType)
     img = assert_opencvdata(img, 3)
     for i in range(len(start_x)):
@@ -539,8 +536,8 @@ def fillConvexPoly(
     lineType: LineTypes = LineTypes.LINE_8,
     shift: int = 0,
 ) -> OpenCVImageFormat:
-    color = rgb_from_hexstring(color)
-    color = color[::-1]
+    color = np.array(rgb_from_hexstring(color))[::-1] / 255.0
+
     lineType = LineTypes.v(lineType)
 
     img = cv2.fillConvexPoly(
@@ -590,8 +587,8 @@ def drawMarker(
     thickness: int = 1,
     lineType: LineTypes = LineTypes.LINE_8,
 ) -> OpenCVImageFormat:
-    color = rgb_from_hexstring(color)
-    color = color[::-1]
+    color = np.array(rgb_from_hexstring(color))[::-1] / 255.0
+
     lineType = LineTypes.v(lineType)
     markerType = MarkerTypes.v(markerType)
 
@@ -637,9 +634,7 @@ def drawContours(
     offset_dx: int = 0,
     offset_dy: int = 0,
 ) -> OpenCVImageFormat:
-    color = rgb_from_hexstring(color)
-
-    color = color[::-1]
+    color = np.array(rgb_from_hexstring(color))[::-1] / 255.0
 
     offset = (offset_dx, offset_dy)
     lineType = LineTypes.v(lineType)
@@ -687,6 +682,155 @@ class ColorMap(fn.DataEnum):
     DEEPGREEN = cv2.COLORMAP_DEEPGREEN
 
 
+def extract_boundaries(label_img):
+    boundaries = {}
+    labels = np.unique(label_img)
+    for label in labels:
+        mask = (label_img == label).astype(np.uint8)
+        edges = cv2.Canny(mask, 0, 1)  # Fast edge detection
+        points = np.column_stack(np.where(edges > 0))
+        if points.size == 0:
+            points = np.column_stack(np.where(mask > 0))  # fallback
+        # get a subset of points (most northher, nothwest, etc.)
+
+        boundaries[label] = points
+    return boundaries
+
+
+def optimize_label_distribution(label_img: np.ndarray) -> np.ndarray:
+    """
+    Reorders labels in a label image to optimize their spatial distribution.
+
+    The function treats negative labels as fixed while positive labels are reordered
+    based on their spatial centroids. For each positive label, it computes a centroid
+    (using contours when available, or falling back to the mean of pixel coordinates).
+    Then, it computes a pairwise distance matrix between centroids and derives a force
+    matrix based on an inverse square law. A greedy algorithm is applied to select a new
+    ordering for the positive labels that aims to spread them out evenly.
+
+    Parameters
+    ----------
+    label_img : np.ndarray
+        A 2D numpy array of integer type where each unique integer represents a distinct label.
+        Negative values are preserved and only positive labels are reordered.
+
+    Returns
+    -------
+    np.ndarray
+        A new label image with re-mapped labels. Negative labels remain unchanged while positive
+        labels are reordered based on the optimized distribution.
+
+    Raises
+    ------
+    TypeError
+        If `label_img` is not a numpy array.
+    ValueError
+        If `label_img` is not of an integer type.
+    RuntimeError
+        If an unexpected number of return values is received from cv2.findContours.
+    """
+    # Validate input
+    if not isinstance(label_img, np.ndarray):
+        raise TypeError("label_img must be a numpy array.")
+    if not np.issubdtype(label_img.dtype, np.integer):
+        raise ValueError("label_img must be of an integer type.")
+
+    # Step 0: Identify unique labels and separate negative and positive labels
+    unique_labels = np.unique(label_img)
+    negative_mask = unique_labels < 0
+    negative_labels = unique_labels[negative_mask]
+    positive_labels = unique_labels[~negative_mask]
+
+    # Step 1: Compute centroids for positive labels
+    centroids = {}
+    for label in positive_labels:
+        # Create a binary mask for the current label
+        mask = (label_img == label).astype(np.uint8)
+
+        # Find contours; handle differences between OpenCV versions
+        contours_result = cv2.findContours(
+            mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        )
+        if len(contours_result) == 2:
+            contours, _ = contours_result
+        elif len(contours_result) == 3:
+            # OpenCV 3 returns (image, contours, hierarchy)
+            _, contours, _ = contours_result
+        else:
+            raise RuntimeError(
+                "Unexpected number of return values from cv2.findContours"
+            )
+
+        # Try to compute centroid using moments from the first contour (if valid)
+        if contours and len(contours[0]) >= 3:
+            M = cv2.moments(contours[0])
+            if M["m00"] != 0:
+                cx = M["m10"] / M["m00"]
+                cy = M["m01"] / M["m00"]
+                centroids[label] = np.array([cy, cx], dtype=np.float32)
+                continue
+
+        # Fallback: compute centroid from the pixel indices directly
+        ys, xs = np.nonzero(mask)
+        if xs.size > 0:
+            centroids[label] = np.array([np.mean(ys), np.mean(xs)], dtype=np.float32)
+        else:
+            # Default to the image center if no pixels are found (should not happen)
+            centroids[label] = np.array(
+                [label_img.shape[0] / 2, label_img.shape[1] / 2], dtype=np.float32
+            )
+
+    # Step 2: Compute pairwise distance matrix for positive labels
+    n_pos = len(positive_labels)
+    if n_pos == 0:
+        # If there are no positive labels, return a copy of the input image
+        return label_img.copy()
+
+    distance_matrix = np.zeros((n_pos, n_pos), dtype=np.float32)
+    for i in range(n_pos):
+        for j in range(i + 1, n_pos):
+            pt1 = centroids[positive_labels[i]]
+            pt2 = centroids[positive_labels[j]]
+            dist = np.linalg.norm(pt1 - pt2)
+            distance_matrix[i, j] = dist
+            distance_matrix[j, i] = dist
+
+    # Compute force matrix using an inverse square law (with a small epsilon to avoid division by zero)
+    epsilon = 1e-6
+    force_matrix = -1 / (distance_matrix + epsilon) ** 2
+
+    # Step 3: Optimize ordering of positive labels using a greedy algorithm
+    # Start with the label having the smallest average force (least repulsion)
+    start_label_idx = np.nanmean(force_matrix, axis=1).argmin()
+    label_order = [start_label_idx]
+    used = {start_label_idx}
+
+    while len(label_order) < n_pos:
+        used_indices = np.array(list(used), dtype=np.int32)
+        # Sum the forces from all used labels for each candidate label
+        summed_forces = force_matrix[used_indices].sum(axis=0)
+        # Exclude already used labels by marking their force as NaN
+        summed_forces[used_indices] = np.nan
+        next_idx = np.nanargmax(summed_forces)
+        label_order.append(next_idx)
+        used.add(next_idx)
+
+    # Create new ordering for positive labels based on the computed order
+    ordered_positive_labels = positive_labels[np.array(label_order)]
+
+    # Step 4: Combine negative labels (unchanged) with the newly ordered positive labels
+    final_label_list = np.concatenate([negative_labels, ordered_positive_labels])
+
+    # Create a mapping from old labels to new labels.
+    # This mapping uses the order of unique_labels and final_label_list so that negative labels remain unchanged.
+    mapping = {old: new for old, new in zip(unique_labels, final_label_list)}
+
+    # Remap the label image using the computed mapping
+    remapped = np.vectorize(mapping.get)(label_img)
+
+    return remapped
+
+
 @fn.NodeDecorator(
     node_id="cv2.labels_to_color",
     default_render_options={"data": {"src": "out"}},
@@ -709,7 +853,8 @@ def labels_to_color(
         raise ValueError("labels must be a 2D array")
     unique_labels = np.unique(labels)
     if mix:
-        unique_labels = np.random.permutation(unique_labels)
+        labels = optimize_label_distribution(labels)
+
     n_colors = min(len(unique_labels), 256)
     colors = cv2.applyColorMap(
         np.linspace(0, 255, n_colors).reshape(n_colors, 1).astype(np.uint8),
