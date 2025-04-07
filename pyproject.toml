@@ -10,6 +10,7 @@ dependencies = [
  "funcnodes",
  "funcnodes-numpy",
  "funcnodes-core>=0.3.49",
+ "funcnodes-pandas>=0.2.12",
 ]
 requires-python = ">=3.11"
 classifiers = [
@@ -31,6 +32,7 @@ dev = [
  "funcnodes-module",
  "pytest-funcnodes>=0.1.0",
  "opencv-python",
+ "pytest-xdist>=3.6.1",
 ]
 
 [build-system]
