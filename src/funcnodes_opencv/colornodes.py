@@ -1,6 +1,10 @@
-from .imageformat import OpenCVImageFormat, ImageFormat, NumpyImageFormat
+from .imageformat import (
+    OpenCVImageFormat,
+    ImageFormat,
+    conv_colorspace,
+)
 import funcnodes as fn
-from .utils import assert_opencvimg
+from .utils import assert_opencvdata
 
 
 class ColorCodes(fn.DataEnum):
@@ -25,12 +29,14 @@ class ColorCodes(fn.DataEnum):
 )
 def color_convert(
     img: ImageFormat,
-    code: ColorCodes = ColorCodes.GRAY,
-) -> NumpyImageFormat:
-    code = ColorCodes.v(code)
-    img = assert_opencvimg(img)
-
-    return NumpyImageFormat(img.to_colorspace(code))
+    src: ColorCodes = ColorCodes.BGR,
+    trg: ColorCodes = ColorCodes.GRAY,
+) -> OpenCVImageFormat:
+    src = ColorCodes.v(src)
+    trg = ColorCodes.v(trg)
+    img = assert_opencvdata(img)
+    new_data = conv_colorspace(img, src, trg)
+    return OpenCVImageFormat(new_data)
 
 
 NODE_SHELF = fn.Shelf(

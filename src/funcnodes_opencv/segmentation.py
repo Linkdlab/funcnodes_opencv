@@ -4,6 +4,7 @@ from typing import Literal, Tuple, List, Union
 import funcnodes as fn
 import cv2
 import numpy as np
+import pandas as pd
 from .imageformat import ImageFormat, NumpyImageFormat
 from .utils import assert_opencvdata
 
@@ -63,11 +64,19 @@ def findContours(
     offset_dy: int = 0,
 ) -> List[np.ndarray]:
     offset = (offset_dx, offset_dy)
+
     mode = RetrievalModes.v(mode)
     method = ContourApproximationModes.v(method)
 
+    img = assert_opencvdata(img, 1)
+    if mode != RetrievalModes.FLOODFILL.value or mode != RetrievalModes.CCOMP.value:
+        img = (img * 255).astype(np.uint8)
+
+    if mode == RetrievalModes.FLOODFILL.value:
+        img = (img * 255).astype(np.int32)  # cv2.FLOODFILL 32bit signed int
+
     contours, hierarchy = cv2.findContours(
-        image=assert_opencvdata(img, 1),
+        image=img,
         mode=mode,
         method=method,
         offset=offset,
@@ -111,29 +120,96 @@ def distance_transform(
 ) -> NumpyImageFormat:
     return NumpyImageFormat(
         cv2.distanceTransform(
-            assert_opencvdata(img, channel=1),
+            (assert_opencvdata(img, channel=1) * 255).astype(np.uint8),
             DistanceTypes.v(distance_type),
             int(mask_size),
         )
     )
 
 
+class ConnectedComponentsAlgorithmsTypes(fn.DataEnum):
+    """
+    Connected components algorithms.
+
+    Attributes:
+        DEFAULT: cv2.CCL_DEFAULT: default algorithm.
+        WU: cv2.CCL_WU: Wu's algorithm.
+        GRANA: cv2.CCL_GRANA: Grana's algorithm.
+        BOLELLI: cv2.CCL_BOLELLI: Bolelli's algorithm.
+        SAUF: cv2.CCL_SAUF: SAUF algorithm.
+        BBDT: cv2.CCL_BBDT: BBDT algorithm.
+        SPAGHETTI: cv2.CCL_SPAGHETTI: Spaghetti algorithm.
+
+    """
+
+    DEFAULT = cv2.CCL_DEFAULT
+    WU = cv2.CCL_WU
+    GRANA = cv2.CCL_GRANA
+    BOLELLI = cv2.CCL_BOLELLI
+    SAUF = cv2.CCL_SAUF
+    BBDT = cv2.CCL_BBDT
+    SPAGHETTI = cv2.CCL_SPAGHETTI
+
+
 @fn.NodeDecorator(
     node_id="cv2.connectedComponents",
     outputs=[
-        {"name": "retval", "type": int},
-        {"name": "labels", "type": np.ndarray},
+        {
+            "name": "retval",
+        },
+        {
+            "name": "labels",
+        },
+        {
+            "name": "stats",
+        },
     ],
     description="Finds connected components in a binary image.",
 )
 def connectedComponents(
     img: ImageFormat,
     connectivity: Literal[4, 8] = 8,
-) -> Tuple[int, np.ndarray]:
+    algorithm: ConnectedComponentsAlgorithmsTypes = ConnectedComponentsAlgorithmsTypes.DEFAULT,
+    background: Literal[-1, 0, 1] = 0,
+) -> Tuple[int, np.ndarray, pd.DataFrame]:
     connectivity = int(connectivity)
-    data = assert_opencvdata(img, 1)
-    retval, labels = cv2.connectedComponents(data, connectivity=connectivity)
-    return retval, labels
+    data = (assert_opencvdata(img, 1) * 255).astype(np.uint8)
+    algorithm = ConnectedComponentsAlgorithmsTypes.v(algorithm)
+
+    retval, labels, stats, centroids = cv2.connectedComponentsWithStatsWithAlgorithm(
+        data,
+        connectivity=connectivity,
+        ltype=cv2.CV_32S,
+        ccltype=algorithm,
+    )
+
+    indices = np.arange(1, retval + 1, dtype=np.int32)
+    labels = labels.astype(np.int32)
+    background = int(background)
+
+    if background > 0:
+        labels = labels + background
+        indices = indices + background
+    elif background < 0:
+        labels[labels == 0] = background
+
+    stats = stats[
+        :,
+        [
+            cv2.CC_STAT_LEFT,
+            cv2.CC_STAT_TOP,
+            cv2.CC_STAT_WIDTH,
+            cv2.CC_STAT_HEIGHT,
+            cv2.CC_STAT_AREA,
+        ],
+    ]
+    df_stats = pd.DataFrame(
+        stats, columns=["left", "top", "width", "height", "area"], index=indices
+    )
+    df_stats["centroid_x"] = centroids[:, 0]
+    df_stats["centroid_y"] = centroids[:, 1]
+
+    return retval, NumpyImageFormat(labels), df_stats
 
 
 @fn.NodeDecorator(
@@ -144,11 +220,12 @@ def watershed(
     img: ImageFormat,
     markers: Union[ImageFormat, np.ndarray],
 ) -> np.ndarray:
-    markers: np.ndarray = assert_opencvdata(markers, 1)
-    img = assert_opencvdata(img)
-    markers = markers.astype(np.int32)
+    if isinstance(markers, ImageFormat):
+        markers = markers.data
 
-    return cv2.watershed(img, markers)
+    img = (assert_opencvdata(img, 3) * 255).astype(np.uint8)
+
+    return cv2.watershed(img, markers)[:, :, 0]
 
 
 NODE_SHELF = fn.Shelf(

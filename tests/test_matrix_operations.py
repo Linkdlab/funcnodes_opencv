@@ -1,6 +1,6 @@
 import numpy as np
-import pytest
 import pytest_funcnodes
+
 from funcnodes_opencv.image_operations.matrix_operations import (
     merge,
     split,
@@ -13,61 +13,54 @@ from funcnodes_opencv.image_operations.matrix_operations import (
 )
 
 
-# Helper function to extract the underlying numpy array.
-def get_image_data(image_format):
-    # Adjust this if your OpenCVImageFormat stores the data differently.
-    return image_format.data if hasattr(image_format, "data") else image_format
-
-
-@pytest.fixture
-def image1():
-    return np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
-
-
-@pytest.fixture
-def image2():
-    return np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
-
-
 @pytest_funcnodes.nodetest(merge)
 async def test_merge(image1, image2):
-    result = get_image_data(
-        await merge.inti_call(
-            channels=[image1[:, :, 0], image2[:, :, 1], image1[:, :, 1]]
-        )
-    )
-    assert result.shape == (100, 100, 3)
-    np.testing.assert_array_equal(result[:, :, 0], image1[:, :, 0])
-    np.testing.assert_array_equal(result[:, :, 1], image2[:, :, 1])
-    np.testing.assert_array_equal(result[:, :, 2], image1[:, :, 1])
+    a = image1.data[:, :, 0]
+    b = image2.data[:, :, 0]
+    c = image1.data[:, :, 1] if image1.testchannels == 3 else image1.data[:, :, 0]
+    result = (await merge.inti_call(channels=[a, b, c])).data
+    assert result.shape == (image1.height(), image1.width(), 3)
+    # showdat([image1, image2], result)
+    np.testing.assert_array_equal(result[:, :, 0], a)
+    np.testing.assert_array_equal(result[:, :, 1], b)
+    np.testing.assert_array_equal(result[:, :, 2], c)
 
 
 @pytest_funcnodes.nodetest(split)
 async def test_split(image1):
     result = await split.inti_call(img=image1)
-    assert len(result) == 3
-    np.testing.assert_array_equal(get_image_data(result[0])[:, :, 0], image1[:, :, 0])
-    np.testing.assert_array_equal(get_image_data(result[1])[:, :, 0], image1[:, :, 1])
-    np.testing.assert_array_equal(get_image_data(result[2])[:, :, 0], image1[:, :, 2])
+    assert len(result) == image1.testchannels
+    np.testing.assert_array_equal((result[0].data)[:, :, 0], image1.data[:, :, 0])
+    if image1.testchannels == 3:
+        np.testing.assert_array_equal((result[1].data)[:, :, 0], image1.data[:, :, 1])
+        np.testing.assert_array_equal((result[2].data)[:, :, 0], image1.data[:, :, 2])
 
 
 @pytest_funcnodes.nodetest(transpose)
 async def test_transpose(image1):
-    result = get_image_data(await transpose.inti_call(img=image1))
-    assert result.shape == (100, 100, 3)
-    np.testing.assert_array_equal(result[:, :, 0], image1[:, :, 0].T)
-    np.testing.assert_array_equal(result[:, :, 1], image1[:, :, 1].T)
-    np.testing.assert_array_equal(result[:, :, 2], image1[:, :, 2].T)
+    result = (await transpose.inti_call(img=image1)).data
+    assert result.shape == (image1.width(), image1.height(), image1.testchannels)
+    np.testing.assert_array_equal(result[:, :, 0], image1.data[:, :, 0].T)
+    if image1.testchannels == 3:
+        np.testing.assert_array_equal(result[:, :, 1], image1.data[:, :, 1].T)
+        np.testing.assert_array_equal(result[:, :, 2], image1.data[:, :, 2].T)
 
 
 @pytest_funcnodes.nodetest(repeat)
 async def test_repeat(image1):
-    result = get_image_data(await repeat.inti_call(img=image1, ny=2, nx=3))
-    assert result.shape == (200, 300, 3)
-    np.testing.assert_array_equal(result[:100, :100, :], image1)
-    np.testing.assert_array_equal(result[100:, :100, :], image1)
-    np.testing.assert_array_equal(result[:100, 100:200, :], image1)
-    np.testing.assert_array_equal(result[:100, 200:, :], image1)
+    result = (await repeat.inti_call(img=image1, ny=2, nx=3)).data
+    h = image1.height()
+    w = image1.width()
+    assert result.shape == (
+        h * 2,
+        w * 3,
+        image1.testchannels,
+    )
+    # showdat([image1], result)
+    np.testing.assert_array_equal(result[:h, :w, :], image1.data)
+    np.testing.assert_array_equal(result[h:, :w, :], image1.data)
+    np.testing.assert_array_equal(result[:h, w : 2 * w, :], image1.data)
+    np.testing.assert_array_equal(result[:h, 2 * w :, :], image1.data)
 
 
 @pytest_funcnodes.nodetest(getAffineTransform)

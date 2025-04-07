@@ -1,8 +1,9 @@
 import cv2
 import funcnodes as fn
 
+import numpy as np
 from ..imageformat import OpenCVImageFormat, ImageFormat
-from ..utils import assert_opencvdata
+from ..utils import assert_opencvdata, assert_similar_opencvdata
 
 
 @fn.NodeDecorator(
@@ -16,9 +17,11 @@ def bitwise_and(
     img2: ImageFormat,
     mask: ImageFormat = None,
 ) -> OpenCVImageFormat:
-    data1 = assert_opencvdata(img1)
-    data2 = assert_opencvdata(img2)
+    data1, data2 = assert_similar_opencvdata(img1, img2)
+    data1 = (data1 * 65535).astype(np.uint16)
+    data2 = (data2 * 65535).astype(np.uint16)
     mask = assert_opencvdata(mask, channel=1) if mask is not None else None
+    mask = (mask * 255).astype(np.uint8) if mask is not None else None
     result = cv2.bitwise_and(data1, data2, mask=mask)
     return OpenCVImageFormat(result)
 
@@ -33,9 +36,11 @@ def bitwise_or(
     img2: ImageFormat,
     mask: ImageFormat = None,
 ) -> OpenCVImageFormat:
-    data1 = assert_opencvdata(img1)
-    data2 = assert_opencvdata(img2)
+    data1, data2 = assert_similar_opencvdata(img1, img2)
+    data1 = (data1 * 65535).astype(np.uint16)
+    data2 = (data2 * 65535).astype(np.uint16)
     mask = assert_opencvdata(mask, channel=1) if mask is not None else None
+    mask = (mask * 255).astype(np.uint8) if mask is not None else None
     result = cv2.bitwise_or(data1, data2, mask=mask)
     return OpenCVImageFormat(result)
 
@@ -51,9 +56,11 @@ def bitwise_xor(
     img2: ImageFormat,
     mask: ImageFormat = None,
 ) -> OpenCVImageFormat:
-    data1 = assert_opencvdata(img1)
-    data2 = assert_opencvdata(img2)
+    data1, data2 = assert_similar_opencvdata(img1, img2)
+    data1 = (data1 * 65535).astype(np.uint16)
+    data2 = (data2 * 65535).astype(np.uint16)
     mask = assert_opencvdata(mask, channel=1) if mask is not None else None
+    mask = (mask * 255).astype(np.uint8) if mask is not None else None
     result = cv2.bitwise_xor(data1, data2, mask=mask)
     return OpenCVImageFormat(result)
 
@@ -69,7 +76,9 @@ def bitwise_not(
     mask: ImageFormat = None,
 ) -> OpenCVImageFormat:
     data = assert_opencvdata(img)
+    data = (data * 65535).astype(np.uint16)
     mask = assert_opencvdata(mask, channel=1) if mask is not None else None
+    mask = (mask * 255).astype(np.uint8) if mask is not None else None
     result = cv2.bitwise_not(data, mask=mask)
     return OpenCVImageFormat(result)
 

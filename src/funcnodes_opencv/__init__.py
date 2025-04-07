@@ -6,6 +6,7 @@ from . import (
     image_processing,
     drawing,
     segmentation,
+    misc_nodes,
 )
 import funcnodes as fn
 import funcnodes_numpy as fnnp  # noqa: F401 # for type hinting
@@ -18,10 +19,12 @@ __all__ = [
     "image_processing",
     "colornodes",
     "drawing",
+    "segmentation",
+    "misc_nodes",
 ]
 
 
-__version__ = "0.2.18"
+__version__ = "0.3.0"
 
 
 NODE_SHELF = fn.Shelf(
@@ -33,6 +36,7 @@ NODE_SHELF = fn.Shelf(
         colornodes.NODE_SHELF,
         drawing.NODE_SHELF,
         segmentation.NODE_SHELF,
+        misc_nodes.NODE_SHELF,
     ],
     nodes=[],
 )
