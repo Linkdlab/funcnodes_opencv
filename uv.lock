@@ -461,7 +461,7 @@ wheels = [
 
 [[package]]
 name = "funcnodes-opencv"
-version = "0.3.0"
+version = "0.3.1"
 source = { editable = "." }
 dependencies = [
     { name = "funcnodes" },
