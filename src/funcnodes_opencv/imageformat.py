@@ -202,11 +202,22 @@ NumpyImageFormat.add_to_converter(OpenCVImageFormat, np_to_cv2)
 
 
 def cv2_to_pil(cv2_img: OpenCVImageFormat) -> PillowImageFormat:
-    return cv2_img.to_np().to_img()
+    data = _assert_image_channels(cv2_img.data, 3)
+
+    data = cv2.cvtColor(data, cv2.COLOR_BGR2RGB)
+    return PillowImageFormat(data)
 
 
 def pil_to_cv2(pil_img: PillowImageFormat) -> OpenCVImageFormat:
-    return pil_img.to_np().to_cv2()
+    np_image: NumpyImageFormat = pil_img.to_np()
+    # pillow is RGB or grey
+    # opencv is BGR or grey
+    np_data = np_image.data
+
+    if np_data.ndim >= 3 and np_data.shape[2] >= 3:
+        np_data = np_data[:, :, :3]  # drop alpha channel if present
+        np_data = cv2.cvtColor(np_data, cv2.COLOR_RGB2BGR)
+    return OpenCVImageFormat(np_data)
 
 
 OpenCVImageFormat.add_to_converter(PillowImageFormat, cv2_to_pil)
